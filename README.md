@@ -2,42 +2,144 @@
 
 A collection of Claude Code skills for understanding large, unfamiliar codebases — including AI-generated ones. The goal is clarity in both technical and human terms: not just *what the code does*, but *what the product is*, *who it's for*, and *whether it's actually well-built*.
 
+> Working shit code is still shit. These skills are designed to tell you the difference — to separate "this runs" from "this is good."
+
+---
+
+## Quick start
+
+**1. Install the skills** so Claude Code can find them. Either copy them into the repo you want to analyze, or install globally for all repos:
+
+```bash
+# Option A — global (available in every project)
+cp -r .claude/skills/* ~/.claude/skills/
+
+# Option B — per-project (commit them with the repo, or keep local)
+cp -r .claude/skills <target-repo>/.claude/
+```
+
+**2. Run the skills** from inside the target repo, in order:
+
+```
+/orient      # start here — always
+/map         # then any of these, in any order
+/quality
+/story
+```
+
+**3. Read the report** printed to your conversation, and find the saved artifacts in `.archeology/` (see [What you get](#what-you-get)).
+
+> Not using Claude Code? See [Agent compatibility](#agent-compatibility) — the same skills run as plain prompts in Copilot agent, Cursor, Codex, etc.
+
+---
+
 ## Skills
 
-| Skill | Purpose | Prereqs |
-|-------|---------|---------|
-| `/orient` | Plain-English product orientation — what is this, who is it for, what does it do | none |
-| `/map` | Logical architecture map — layers, data flow, cross-cutting concerns, Mermaid diagram | `/orient` |
-| `/quality` | Craft assessment — structural, intentional, and human-verdict quality | `/orient` |
-| `/story` | Development narrative — how the codebase evolved, pivots, fossils | `/orient` |
+| Skill | Answers | Prereq |
+|-------|---------|--------|
+| `/orient` | What is this, who is it for, what does it do? | none |
+| `/map` | How is it structured — layers, data flow, cross-cutting concerns? | `/orient` |
+| `/quality` | Is it actually well-built — structurally, intentionally, and in craft? | `/orient` |
+| `/story` | How did it evolve — origins, pivots, abandoned work? | `/orient` |
 
-Run them in order for a full picture, or run any individually for a focused view.
+Start with `/orient` (it builds the shared snapshot everything else reads). After that, run whichever skills answer your question — they're independent.
+
+---
+
+## What you get
+
+Each skill prints a human-readable report **and** writes structured artifacts into an `.archeology/` directory in the analyzed repo:
+
+```
+.archeology/
+  snapshot.json     # shared structured findings — all skills read & write this
+  map.mmd           # Mermaid architecture diagram (from /map)
+  story.md          # prose development narrative (from /story)
+```
+
+### Example: what `/orient` prints
+
+```
+## What is this?
+A self-hosted invoicing tool for freelancers. Users connect a Stripe
+account, generate branded invoices, and track payment status. Built as a
+single-tenant app — one deployment per user.
+
+## Who is it for?
+Solo freelancers and very small agencies who want to avoid SaaS invoicing
+fees. Technical enough to self-host via Docker.
+
+## Stack at a glance
+- TypeScript (62%), Python (24%), Docker, HTML
+- Next.js frontend + Express API; Python service for PDF generation
+- Services: web, api, pdf-worker, postgres, redis
+- External: Stripe (payments), SendGrid (email)
+
+## Maturity assessment
+MVP. Core invoice flow is complete and tested, but no multi-tenancy,
+thin error handling on the payment webhook, and a half-built "recurring
+invoices" feature behind a disabled flag.
+
+## What to look at next
+- The Stripe webhook handler (api/webhooks/stripe.ts) — payment-critical,
+  lightly tested
+- The cross-language Invoice model (TS + Python) — likely drift risk
+```
+
+### Example: what `/quality` prints
+
+```
+## Quality Assessment: C
+
+### The verdict
+This codebase has the personality of a confident first draft. The happy
+path is clean and the type definitions are genuinely good, but the error
+handling is theater — try/catch blocks that swallow failures and log
+nothing. It reads like it was built fast by someone competent who never
+came back to harden it...
+
+### If I had to fix one thing first
+The payment webhook silently swallows Stripe signature-verification
+failures. That's a correctness and security hole, not a style nit.
+```
+
+The point: you get a **narrative verdict** a human can act on, not just a pile of metrics.
+
+---
 
 ## How it works
 
-Each skill writes its findings to `.archeology/snapshot.json` in the analyzed repo. This shared artifact means:
+Each skill reads from and writes to `.archeology/snapshot.json`. This shared artifact is the backbone:
 
-- Skills don't re-read what previous skills already processed
-- Analysis is resumable if interrupted (large codebases can exhaust context)
-- Later skills have domain context from earlier ones — calling something a bad abstraction means more when you already know the domain vocabulary
+- **No re-reading** — skills consume prior analysis instead of re-scanning the codebase
+- **Resumable** — if a run is interrupted (large repos can exhaust context), the next run picks up from where it stopped via the snapshot's coverage map
+- **Context-aware** — later skills inherit domain context from earlier ones, so judgments like "this is a bad abstraction" are grounded in what the domain actually needs
 
-The `.archeology/` directory is local to the analyzed repo and should be added to that repo's `.gitignore`.
+The `.archeology/` directory is local to the analyzed repo. **Add it to that repo's `.gitignore`** — it's analysis output, not source.
+
+---
 
 ## Designed for large codebases
 
-These skills are built with strict context discipline:
-- Breadth-first, not exhaustive — reads the boundary layer before diving into implementation
-- Progressive snapshot writes — findings are persisted incrementally, not just at the end
-- Coverage tracking — the snapshot records what's been read and what's queued, enabling clean resumption
-- File-size limits — no skill reads a complete large file when the first 80 lines will do
+Built with strict context discipline so they don't choke on big repos:
+
+- **Breadth-first, not exhaustive** — reads the boundary layer (entry points, routes, types, infra) before any implementation
+- **Progressive snapshot writes** — findings are persisted incrementally, after every step, not just at the end
+- **Coverage tracking** — the snapshot records what's been read, queued, and skipped, enabling clean resumption
+- **File-size limits** — no skill reads a complete large file when the first 80 lines answer the question
+
+---
 
 ## Stack support
 
-Optimized for the modern polyglot stack:
-- **TypeScript / JavaScript** — framework detection, type quality, `any` analysis
-- **Python** — async patterns, type annotation coverage, module structure
+Tuned for the modern polyglot stack:
+
+- **TypeScript / JavaScript** — framework detection, type quality, `any`/`@ts-ignore` analysis
+- **Python** — async patterns, type-annotation coverage, module structure
 - **Docker / Compose** — service architecture, build quality, security signals
-- HTML and static assets as signal sources for domain and audience
+- **HTML / static assets** — mined as signal for domain and audience
+
+---
 
 ## Agent compatibility
 
@@ -52,8 +154,10 @@ The `prompts/` directory contains identical content packaged for **any agent wit
 | Cursor | Reference `prompts/orient.md` in your prompt |
 | Any other agent | Paste the prompt content directly |
 
-The snapshot file (`.archeology/snapshot.json`) is the same regardless of which agent runs the skill — two agents can hand off between steps.
+The snapshot file is the same regardless of which agent runs the skill, so agents can **hand off between steps** — run `/orient` in one tool, `/quality` in another, against the same `.archeology/snapshot.json`.
+
+---
 
 ## Schema
 
-The snapshot schema lives at [`schema/snapshot.schema.json`](schema/snapshot.schema.json). It defines the shared artifact all skills read from and write to.
+The snapshot contract lives at [`schema/snapshot.schema.json`](schema/snapshot.schema.json) — a JSON Schema defining the shared artifact all skills read from and write to. If you're building tooling on top of the output, validate against this.

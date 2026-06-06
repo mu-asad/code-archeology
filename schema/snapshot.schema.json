@@ -251,8 +251,8 @@
           }
         }
       }
-    }
-  },
+    },
+
     "story": {
       "type": "object",
       "description": "Development narrative — written by the story skill",
