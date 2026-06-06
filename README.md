@@ -39,6 +39,21 @@ Optimized for the modern polyglot stack:
 - **Docker / Compose** — service architecture, build quality, security signals
 - HTML and static assets as signal sources for domain and audience
 
+## Agent compatibility
+
+The `.claude/skills/` versions are Claude Code-native — auto-discovered and invoked via `/orient` etc.
+
+The `prompts/` directory contains identical content packaged for **any agent with terminal + file access**:
+
+| Agent | How to use |
+|-------|-----------|
+| Claude Code | `/orient` — auto-invoked from `.claude/skills/` |
+| GitHub Copilot agent | `@workspace prompts/orient.md` → "run this on [path]" |
+| Cursor | Reference `prompts/orient.md` in your prompt |
+| Any other agent | Paste the prompt content directly |
+
+The snapshot file (`.archeology/snapshot.json`) is the same regardless of which agent runs the skill — two agents can hand off between steps.
+
 ## Schema
 
 The snapshot schema lives at [`schema/snapshot.schema.json`](schema/snapshot.schema.json). It defines the shared artifact all skills read from and write to.
