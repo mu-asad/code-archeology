@@ -79,8 +79,14 @@ If >100 commits: read first 10, last 10, skim middle for pivot-shaped messages.
 ## Step 3 — Read the founding commit(s)
 
 ```bash
-git log --oneline | tail -5    # find early commit hashes
-git show [early-hash] --stat   # what was in the initial state
+# List the first 5 commits chronologically
+git log --oneline --reverse --max-count=5
+
+# Inspect the root commit's file manifest
+git show --stat $(git rev-list --max-parents=0 HEAD)
+
+# Diff of what the first commit introduced
+git show $(git rev-list --max-parents=0 HEAD)
 ```
 
 What to look for:

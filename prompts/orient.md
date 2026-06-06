@@ -78,7 +78,9 @@ Look for:
 
 **Do not read the handlers** — read only the route declarations. `GET /users/:id` tells you more than the implementation.
 
-List the top 20 most interesting routes/endpoints in `snapshot.structure.layers`. Write snapshot.
+List the top 20 most interesting routes/endpoints in `snapshot.structure.public_surface`. Write snapshot.
+
+Note: use `public_surface` — not `structure.layers`. The `layers` field is reserved for the map skill's logical architecture objects and has a different shape (`name/paths/responsibility`).
 
 ---
 

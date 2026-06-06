@@ -127,10 +127,11 @@
 
     "structure": {
       "type": "object",
-      "description": "Logical architecture — filled in by the map skill",
+      "description": "Application structure — written by multiple skills: orient writes entry_points, public_surface, and domain_model; map writes layers and cross_cutting",
       "properties": {
         "entry_points": {
           "type": "array",
+          "description": "Where execution starts — written by orient",
           "items": {
             "type": "object",
             "properties": {
@@ -140,9 +141,22 @@
             }
           }
         },
+        "public_surface": {
+          "type": "array",
+          "description": "Public routes, endpoints, or CLI commands — written by orient. Kept separate from layers to avoid conflicting with map's logical layer objects.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "method": { "type": "string", "description": "HTTP method or 'CLI' / 'GQL' / 'RPC'" },
+              "path": { "type": "string", "description": "Route path or command name" },
+              "description": { "type": "string" },
+              "source_file": { "type": "string" }
+            }
+          }
+        },
         "layers": {
           "type": "array",
-          "description": "Logical layers of the application",
+          "description": "Logical architecture layers of the application — written by map",
           "items": {
             "type": "object",
             "properties": {
@@ -152,9 +166,21 @@
             }
           }
         },
+        "cross_cutting": {
+          "type": "array",
+          "description": "Concerns that touch every layer (auth, logging, error handling, validation) — written by map",
+          "items": {
+            "type": "object",
+            "properties": {
+              "concern": { "type": "string", "description": "e.g. 'auth', 'logging', 'error handling', 'validation'" },
+              "how_handled": { "type": "string" },
+              "gaps": { "type": "string" }
+            }
+          }
+        },
         "domain_model": {
           "type": "array",
-          "description": "Core domain entities — filled in by domain-glossary skill",
+          "description": "Core domain entities — written by orient, extended by domain-glossary skill",
           "items": {
             "type": "object",
             "properties": {
@@ -223,6 +249,50 @@
             "strengths": { "type": "array", "items": { "type": "string" } },
             "weaknesses": { "type": "array", "items": { "type": "string" } }
           }
+        }
+      }
+    }
+  },
+    "story": {
+      "type": "object",
+      "description": "Development narrative — written by the story skill",
+      "properties": {
+        "timeline": {
+          "type": "array",
+          "description": "Key events in chronological order",
+          "items": {
+            "type": "object",
+            "properties": {
+              "date": { "type": "string" },
+              "event": { "type": "string" }
+            }
+          }
+        },
+        "pivots": {
+          "type": "array",
+          "description": "Points where direction noticeably changed",
+          "items": { "type": "string" }
+        },
+        "fossils": {
+          "type": "array",
+          "description": "Abandoned or incomplete areas inferred from history",
+          "items": { "type": "string" }
+        },
+        "churn_hotspots": {
+          "type": "array",
+          "description": "Files with the most change history",
+          "items": {
+            "type": "object",
+            "properties": {
+              "path": { "type": "string" },
+              "change_count": { "type": "number" },
+              "note": { "type": "string" }
+            }
+          }
+        },
+        "narrative_file": {
+          "type": "string",
+          "description": "Path to the prose narrative file, relative to .archeology/ — typically story.md"
         }
       }
     }

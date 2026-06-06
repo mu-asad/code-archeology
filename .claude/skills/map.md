@@ -52,7 +52,7 @@ Record in `snapshot.structure.layers`. Write snapshot.
 
 ## Step 2 — Trace a request end-to-end
 
-Pick the most important user-facing action in this codebase (infer it from the routes found in `/orient`). Trace it from entry point to response:
+Pick the most important user-facing action in this codebase (infer it from `snapshot.structure.public_surface` written by `/orient`). Trace it from entry point to response:
 
 1. Where does the request enter? (route/handler)
 2. What service or business logic does it call?
