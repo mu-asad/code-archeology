@@ -8,15 +8,19 @@ A collection of Claude Code skills for understanding large, unfamiliar codebases
 
 ## Quick start
 
-**1. Install the skills** so Claude Code can find them. Either copy them into the repo you want to analyze, or install globally for all repos:
+**1. Install the skills** so Claude Code can find them. Copy both the skills **and** the bundled `settings.json` (it allowlists the git commands the skills run, so you don't get repeated permission prompts):
 
 ```bash
 # Option A — global (available in every project)
 cp -r .claude/skills/* ~/.claude/skills/
+# merge the permission allowlist into your global settings (or copy if you have none)
+cp .claude/settings.json ~/.claude/settings.json
 
-# Option B — per-project (commit them with the repo, or keep local)
-cp -r .claude/skills <target-repo>/.claude/
+# Option B — per-project (copy the whole .claude/ so settings come along)
+cp -r .claude <target-repo>/
 ```
+
+> The allowlist only covers read-only git commands. Standard UNIX tools the skills use (`find`, `grep`, `wc`, `sort`, `head`, `tail`, etc.) are already auto-allowed by Claude Code, so no extra config is needed for them.
 
 **2. Run the skills** from inside the target repo, in order:
 
@@ -145,7 +149,7 @@ Tuned for the modern polyglot stack:
 
 The `.claude/skills/` versions are Claude Code-native — auto-discovered and invoked via `/orient` etc.
 
-The `prompts/` directory contains identical content packaged for **any agent with terminal + file access**:
+The `prompts/` directory mirrors the same skills — same steps, same snapshot contract, same output format — repackaged for **any agent with terminal + file access**. (The wording differs slightly: the prompt versions add agent-agnostic framing and drop Claude Code-specific phrasing, so they're parallel rather than byte-for-byte identical.)
 
 | Agent | How to use |
 |-------|-----------|

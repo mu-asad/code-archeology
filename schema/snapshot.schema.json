@@ -41,7 +41,8 @@
             "properties": {
               "path": { "type": "string" },
               "reason": { "type": "string" }
-            }
+            },
+            "required": ["path", "reason"]
           },
           "description": "Paths explicitly skipped and why (generated files, vendored deps, etc.)"
         }
@@ -151,7 +152,8 @@
               "path": { "type": "string", "description": "Route path or command name" },
               "description": { "type": "string" },
               "source_file": { "type": "string" }
-            }
+            },
+            "required": ["method", "path"]
           }
         },
         "layers": {

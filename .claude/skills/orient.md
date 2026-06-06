@@ -21,7 +21,18 @@ If no path is given, use the current working directory.
 Before reading any code, check if `.archeology/snapshot.json` already exists in the target repo.
 
 - **If it exists**: load it. Check `meta.skills_run` — if `orient` is already in there, report the existing findings and ask the user if they want to re-run. If resuming an interrupted run, continue from `coverage.queued`.
-- **If it doesn't exist**: create `.archeology/` directory and initialize a fresh snapshot following the schema at `schema/snapshot.schema.json` (in this skills repo). Set `meta.created_at`, `meta.updated_at`, `meta.repo`, and `meta.skills_run: []`.
+- **If it doesn't exist**: create `.archeology/` directory and initialize a fresh snapshot following the schema at `schema/snapshot.schema.json` (in this skills repo). The very first write must already satisfy the schema's required top-level keys, so initialize all of them — not just `meta`:
+
+  ```json
+  {
+    "meta": { "repo": "<abs-path>", "created_at": "<now>", "updated_at": "<now>", "skills_run": [] },
+    "coverage": { "analyzed": [], "queued": [], "skipped": [] },
+    "stack": {},
+    "product": {}
+  }
+  ```
+
+  `stack` and `product` have no required sub-fields, so empty objects are valid until you fill them in later steps.
 
 **Write the snapshot to disk after every major step below.** Do not wait until the end. If the agent runs out of context mid-run, the next invocation can resume from where it left off.
 

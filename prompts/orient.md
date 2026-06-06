@@ -24,7 +24,18 @@ This prompt is designed to work on large repos without choking on context. Read 
 Before reading any code, check if `.archeology/snapshot.json` already exists in the target repo.
 
 - **If it exists:** load it. Check `meta.skills_run` — if `orient` is already listed, report the existing findings and ask if the user wants to re-run. If resuming an interrupted run, continue from `coverage.queued`.
-- **If it doesn't exist:** create the `.archeology/` directory and initialize a fresh snapshot. Use the schema at `schema/snapshot.schema.json` in this repo as the structure. Set `meta.created_at`, `meta.updated_at`, `meta.repo`, and `meta.skills_run: []`.
+- **If it doesn't exist:** create the `.archeology/` directory and initialize a fresh snapshot. Use the schema at `schema/snapshot.schema.json` in this repo as the structure. The very first write must already satisfy the schema's required top-level keys, so initialize all of them — not just `meta`:
+
+  ```json
+  {
+    "meta": { "repo": "<abs-path>", "created_at": "<now>", "updated_at": "<now>", "skills_run": [] },
+    "coverage": { "analyzed": [], "queued": [], "skipped": [] },
+    "stack": {},
+    "product": {}
+  }
+  ```
+
+  `stack` and `product` have no required sub-fields, so empty objects are valid until you fill them in later steps.
 
 **Write the snapshot to disk after every major step.** Do not wait until the end. If context runs out mid-run, the next invocation can resume from `coverage.queued`.
 
