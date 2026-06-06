@@ -1,0 +1,158 @@
+# orient
+
+Produce a plain-English product orientation for an unfamiliar codebase. Answer: **what is this, who is it for, and what does it actually do?** — in human terms, not technical ones.
+
+This skill is designed to work on large repos without choking on context. It reads breadth-first, never exhaustively, and writes all findings to a shared snapshot file before finishing.
+
+---
+
+## How to invoke
+
+```
+/orient [path-to-repo]
+```
+
+If no path is given, use the current working directory.
+
+---
+
+## Step 0 — Initialize or resume snapshot
+
+Before reading any code, check if `.archeology/snapshot.json` already exists in the target repo.
+
+- **If it exists**: load it. Check `meta.skills_run` — if `orient` is already in there, report the existing findings and ask the user if they want to re-run. If resuming an interrupted run, continue from `coverage.queued`.
+- **If it doesn't exist**: create `.archeology/` directory and initialize a fresh snapshot following the schema at `schema/snapshot.schema.json` (in this skills repo). Set `meta.created_at`, `meta.updated_at`, `meta.repo`, and `meta.skills_run: []`.
+
+**Write the snapshot to disk after every major step below.** Do not wait until the end. If the agent runs out of context mid-run, the next invocation can resume from where it left off.
+
+---
+
+## Step 1 — Architecture skeleton (read first, always)
+
+Read these files in order. They give you the shape of the application before you read a single line of business logic.
+
+1. `docker-compose.yml`, `docker-compose.yaml`, `compose.yml` — services, ports, dependencies
+2. Any `Dockerfile` or `Dockerfile.*` at the root
+3. `package.json` (root-level) — name, description, scripts, key dependencies
+4. `pyproject.toml`, `setup.py`, `requirements.txt` — Python package identity
+5. `.env.example`, `.env.sample` — reveals expected configuration and integrations
+6. Root-level `README.md` — stated intent (treat as a claim to verify, not ground truth)
+
+For each file found: extract the signal, skip if absent, do not block.
+
+After reading these, update `snapshot.stack` (languages, frameworks, services, external_dependencies) and write the snapshot.
+
+---
+
+## Step 2 — Entry points
+
+Find where execution actually starts. This tells you what *kind* of thing this is.
+
+Look for (in priority order):
+- `main.py`, `app.py`, `run.py`, `manage.py` (Python)
+- `index.ts`, `server.ts`, `app.ts`, `main.ts` (TypeScript)
+- `index.js`, `server.js`, `app.js` (JavaScript)
+- Script entries in `package.json` `scripts` field (`start`, `dev`, `serve`)
+- Procfile, systemd unit files
+- Docker `CMD` / `ENTRYPOINT` directives
+
+For each entry point found: read the first 60–100 lines only. You want to know the type (HTTP server? CLI? worker? cron?) and the top-level wiring — not the full implementation.
+
+Record each in `snapshot.structure.entry_points`. Write snapshot.
+
+---
+
+## Step 3 — Public surface area
+
+Read route/endpoint definitions — this is the clearest signal of what the app *does*.
+
+Look for:
+- Express/Fastify/Hono router files: `routes/`, `api/`, `src/routes/`
+- FastAPI/Flask/Django URL patterns: `urls.py`, `routes.py`, `views.py`, `routers/`
+- Next.js: `app/` directory structure, `pages/api/`
+- GraphQL: schema files (`*.graphql`, `schema.ts`)
+- CLI commands: `commands/`, `cmd/`
+
+**Do not read the handlers** — read only the route declarations. The pattern `GET /users/:id` tells you more than the implementation.
+
+List the top 20 most interesting routes/endpoints in the snapshot under `structure.layers`. Write snapshot.
+
+---
+
+## Step 4 — Domain model
+
+Find where the core data shapes are defined. This reveals the mental model.
+
+Look for:
+- TypeScript: `types/`, `interfaces/`, `models/`, `schemas/`, `*.types.ts`, `*.interface.ts`
+- Python: `models/`, `schemas.py`, `models.py`, Pydantic models, SQLAlchemy models, dataclasses
+- Database: `migrations/`, `schema.sql`, ORM model definitions
+
+Read these files. Extract entity names and their key fields. Flag any entity that appears in both TypeScript and Python — these are cross-language models worth a consistency check later.
+
+Record in `snapshot.structure.domain_model`. Write snapshot.
+
+---
+
+## Step 5 — Synthesize the product understanding
+
+Now, without reading any more code, synthesize everything you've gathered:
+
+**Answer these questions:**
+1. What does this product do? (One sentence a non-technical person could understand)
+2. Who is the intended user? (Developer? Consumer? Internal ops team? ML engineer?)
+3. What problem does it solve?
+4. What is its maturity level? (Prototype / MVP / Production / Legacy — and why you think so)
+5. What does it *not* do that you might have expected given the name/README?
+
+Write a `summary` (2–4 sentences), `domain`, `audience`, `maturity`, and `confidence` into `snapshot.product`.
+
+---
+
+## Step 6 — Output
+
+Print a human-readable orientation report. Use this format:
+
+```
+## What is this?
+[2-4 sentence plain-English description]
+
+## Who is it for?
+[audience + use case]
+
+## Stack at a glance
+[bullet list: language%, framework, key services, notable external deps]
+
+## Domain model (key entities)
+[bullet list of 5-10 core entities with one-line descriptions]
+
+## Public surface
+[bullet list of the most important routes/endpoints/commands]
+
+## Maturity assessment
+[maturity level + 1-2 sentence justification]
+
+## What to look at next
+[2-3 recommended areas for deeper investigation — informed by what you found interesting or suspicious]
+```
+
+---
+
+## Context budget rules
+
+This skill operates under strict context discipline. Follow these rules:
+
+- **Never read an entire large file.** If a file is >200 lines, read only the top 80 lines unless a specific section is needed.
+- **Never read `node_modules/`, `.venv/`, `__pycache__/`, `dist/`, `build/`, `.next/`, `coverage/`**. Add them to `coverage.skipped` immediately.
+- **Stop and write snapshot if context feels heavy.** Better to write partial findings than lose them. The next run will resume from `coverage.queued`.
+- **Prefer file listings over file reads.** `ls` and `find` are cheap. Understand the shape of a directory before deciding whether to read it.
+- **If you find yourself reading implementation details**, stop — you're going too deep. Orient is a breadth-first skill.
+
+---
+
+## Failure modes to avoid
+
+- **README trust**: READMEs lie, especially in AI codebases. Treat stated purpose as a hypothesis, verify against entry points and routes.
+- **Framework assumption**: Don't assume a React app is a frontend just because it uses React — it might be a static site generator, an email renderer, etc.
+- **Completeness pressure**: A confident partial picture is more useful than an uncertain complete one. Say what you don't know.
+- **Over-reading Python**: Python scripts in a mostly-TS codebase are often glue/tooling, not the main product. Don't over-index on them.
