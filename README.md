@@ -58,9 +58,12 @@ Claude Code auto-discovers `<target-repo>/.claude/skills/`, so the next time you
 | `/orient` | What is this, who is it for, what does it do? | none |
 | `/map` | How is it structured — layers, data flow, cross-cutting concerns? | `/orient` |
 | `/quality` | Is it actually well-built — structurally, intentionally, and in craft? | `/orient` |
+| `/the-finder-outer` | Where is this code *pretending* to be good? Adversarial, evidence-based review of the gap between "passes checks" and "trustworthy." | `/orient` (uses `/map`, `/quality` if present) |
 | `/story` | How did it evolve — origins, pivots, abandoned work? | `/orient` |
 
 Start with `/orient` (it builds the shared snapshot everything else reads). After that, run whichever skills answer your question — they're independent.
+
+`/quality` and `/the-finder-outer` are complementary, not redundant: `/quality` gives a balanced craft assessment and a grade; `/the-finder-outer` is the skeptical senior reviewer that hunts for locally-polished, systemically-untrustworthy code and refuses to grade — every finding stands on traced evidence.
 
 ---
 
@@ -76,7 +79,7 @@ Each skill prints a human-readable report **and** writes structured artifacts in
   story.md          # standalone prose development narrative (from /story)
 ```
 
-**`report.md` is the one to read.** Instead of scrolling the console, open it for a single document that aggregates each skill's output — the orientation, the system map (with the Mermaid diagram embedded inline), the quality verdict, and the development story. Each skill writes its own marker-delimited section, so it fills in as you run more skills and updates cleanly on re-runs, in any order.
+**`report.md` is the one to read.** Instead of scrolling the console, open it for a single document that aggregates each skill's output — the orientation, the system map (with the Mermaid diagram embedded inline), the quality verdict, the finder-outer's adversarial findings, and the development story. Each skill writes its own marker-delimited section, so it fills in as you run more skills and updates cleanly on re-runs, in any order.
 
 ### Example: what `/orient` prints
 

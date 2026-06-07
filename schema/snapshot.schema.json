@@ -297,6 +297,56 @@
           "description": "Path to the prose narrative file, relative to .archeology/ — typically story.md"
         }
       }
+    },
+
+    "finder_outer": {
+      "type": "object",
+      "description": "Adversarial review findings — written by the the-finder-outer skill. No grade by design; findings stand on evidence.",
+      "properties": {
+        "verdict": {
+          "type": "string",
+          "description": "2-4 paragraph skeptical assessment of where the code is fake-good, over-complex, or quietly fragile"
+        },
+        "highest_risk_smells": {
+          "type": "array",
+          "description": "Findings ranked by risk to trust/production",
+          "items": {
+            "type": "object",
+            "properties": {
+              "path": { "type": "string", "description": "File path, with line if known" },
+              "smell": { "type": "string" },
+              "evidence": { "type": "string", "description": "What was traced — caller count, behavior, the specific line" },
+              "risk": { "type": "string", "description": "Why it matters / blast radius" },
+              "confidence": { "type": "string", "enum": ["confirmed", "suspicious"], "description": "confirmed = traced; suspicious = worth a look, unproven" }
+            },
+            "required": ["path", "smell", "evidence"]
+          }
+        },
+        "fake_abstractions": {
+          "type": "array",
+          "description": "Abstractions that promise more than they deliver",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "path": { "type": "string" },
+              "promised_value": { "type": "string", "description": "What the abstraction implies it buys" },
+              "actual_value": { "type": "string", "description": "What it actually buys, e.g. '1 impl, 1 caller'" },
+              "recommendation": { "type": "string", "enum": ["delete", "simplify", "keep", "verify-first"] }
+            },
+            "required": ["name", "path"]
+          }
+        },
+        "low_value_tests": {
+          "type": "array",
+          "description": "Tests that appease tools without increasing trust (assert mocks, lock in junk, happy-path only)",
+          "items": { "type": "string" }
+        },
+        "simplify_first": {
+          "type": "string",
+          "description": "The single most useful deletion/simplification, with its blast-radius safety check"
+        }
+      }
     }
   },
   "required": ["meta", "coverage", "stack", "product"]
