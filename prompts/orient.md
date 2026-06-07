@@ -128,28 +128,30 @@ Write a `summary` (2–4 sentences), `domain`, `audience`, `maturity`, and `conf
 
 ## Step 6 — Output
 
-Print a human-readable orientation report:
+Print a human-readable orientation report — a single `## Orientation` title with `###` subsections (matching the shape of map/quality/story), so it nests correctly when embedded in the aggregated report in Step 7:
 
 ```
-## What is this?
+## Orientation
+
+### What is this?
 [2-4 sentence plain-English description]
 
-## Who is it for?
+### Who is it for?
 [audience + use case]
 
-## Stack at a glance
+### Stack at a glance
 [bullet list: language%, framework, key services, notable external deps]
 
-## Domain model (key entities)
+### Domain model (key entities)
 [bullet list of 5-10 core entities with one-line descriptions]
 
-## Public surface
+### Public surface
 [bullet list of most important routes/endpoints/commands]
 
-## Maturity assessment
+### Maturity assessment
 [maturity level + 1-2 sentence justification]
 
-## What to look at next
+### What to look at next
 [2-3 recommended areas for deeper investigation]
 ```
 
@@ -170,8 +172,7 @@ The file uses marker-delimited sections so skills can run in any order and re-ru
 - **Write your section** between markers, just after the header. If the block already exists, replace its contents; otherwise insert it. Keep sections in this order: `orient`, `map`, `quality`, `story`.
   ```markdown
   <!-- section:orient -->
-  ## Orientation
-  <the exact content you printed to the console in Step 6>
+  <the exact content you printed to the console in Step 6, verbatim — it already begins with `## Orientation`, so do not add another heading>
   <!-- /section:orient -->
   ```
 - **Update** the `last updated` timestamp in the header on every write.

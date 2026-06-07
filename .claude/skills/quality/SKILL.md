@@ -277,8 +277,7 @@ Besides printing to the console, write the **same** content into the shared `.ar
 - Insert or replace your marker-delimited section. Keep section order `orient`, `map`, `quality`, `story`:
   ```markdown
   <!-- section:quality -->
-  ## Quality Assessment
-  <the same content you printed to the console, including the craft narrative in full>
+  <the same content you printed to the console, verbatim (including the craft narrative in full) — it already begins with `## Quality Assessment: [overall_grade]`, so do not add another heading>
   <!-- /section:quality -->
   ```
 - Update the `last updated` timestamp in the header.

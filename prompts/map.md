@@ -158,8 +158,7 @@ Besides printing to the console, write the **same** content into the shared `.ar
 - Insert or replace your marker-delimited section. Keep section order `orient`, `map`, `quality`, `story`:
   ```markdown
   <!-- section:map -->
-  ## System Map
-  <the same content you printed to the console>
+  <the same content you printed to the console, verbatim — it already begins with `## System Map`, so do not add another heading>
   <!-- /section:map -->
   ```
 - **Embed the Mermaid diagram inline** in the section as a fenced ` ```mermaid ` block (so the report renders standalone), in addition to saving the standalone `.archeology/map.mmd`.

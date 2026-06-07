@@ -229,8 +229,7 @@ Besides printing to the console, write the **same** content into the shared `.ar
 - Insert or replace your marker-delimited section. Keep section order `orient`, `map`, `quality`, `story`:
   ```markdown
   <!-- section:story -->
-  ## The Story
-  <the same content you printed to the console, including the full prose narrative>
+  <the same content you printed to the console, verbatim (including the full prose narrative) — it already begins with `## The Story`, so do not add another heading>
   <!-- /section:story -->
   ```
 - The standalone `.archeology/story.md` still gets written as before; this embeds the same narrative inline so the aggregated report is self-contained.
