@@ -46,7 +46,7 @@ Sources, in priority order:
 1. **`quality` hotspots** (if present) — start here.
 2. **Largest files** — `git ls-files '*.ts' '*.tsx' '*.py' | while IFS= read -r f; do wc -l "$f"; done | sort -rn | head`.
 3. **Deep abstraction layers** — files/dirs named `strategy`, `factory`, `provider`, `manager`, `abstract`, `base`, `*Interface`, `handler`.
-4. **Broad tests** — largest test files, and tests with the most mock setup (`grep -rl "mock\|Mock\|patch\|stub"` in the test dir).
+4. **Broad tests** — largest test files, and tests with the most mock setup (`grep -Erl "mock|Mock|patch|stub"` in the test dir).
 5. **Repeated module shapes** — directories whose subfolders share an identical file layout (AI-uniformity signal).
 
 Pick **5–10 suspects total** across a few categories. Record them. Write snapshot.
@@ -111,7 +111,7 @@ Print the report (no grade):
 ### Fake abstractions
 | Abstraction | Where | Promised value | Actual value | Recommendation |
 |-------------|-------|----------------|--------------|----------------|
-| ... | path | what it implies | what it actually buys (e.g. "1 impl, 1 caller") | delete / simplify / keep |
+| ... | path | what it implies | what it actually buys (e.g. "1 impl, 1 caller") | delete / simplify / keep / verify-first |
 
 ### Tests that don't prove much
 [test path → what it asserts → why that doesn't increase trust]
@@ -127,7 +127,7 @@ Print the report (no grade):
 
 ## Step 6 — Snapshot + aggregated report
 
-Record findings under `snapshot.finder_outer`: `verdict`, `highest_risk_smells` (`{path, smell, evidence, risk}`), `fake_abstractions` (`{name, path, promised_value, actual_value, recommendation}`), `low_value_tests` (strings), `simplify_first`.
+Record findings under `snapshot.finder_outer`: `verdict`, `highest_risk_smells` (`{path, smell, evidence, risk, confidence}` — include the `confirmed`/`suspicious` label from Step 2), `fake_abstractions` (`{name, path, promised_value, actual_value, recommendation}`), `low_value_tests` (strings), `simplify_first`.
 
 Then append to `.archeology/report.md` (create with the standard header if absent):
 

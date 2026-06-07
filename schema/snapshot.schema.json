@@ -301,7 +301,7 @@
 
     "finder_outer": {
       "type": "object",
-      "description": "Adversarial review findings — written by the the-finder-outer skill. No grade by design; findings stand on evidence.",
+      "description": "Adversarial review findings — written by /the-finder-outer. No grade by design; findings stand on evidence.",
       "properties": {
         "verdict": {
           "type": "string",

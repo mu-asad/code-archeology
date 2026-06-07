@@ -9,7 +9,7 @@ A collection of Claude Code skills for understanding large, unfamiliar codebases
 ## Repository layout
 
 ```
-.claude/skills/<name>/SKILL.md   # the Claude Code skills (orient, map, quality, story)
+.claude/skills/<name>/SKILL.md   # the Claude Code skills (orient, map, quality, the-finder-outer, story)
 .claude/settings.json            # git-command allowlist bundled with the skills
 prompts/<name>.md                # the same skills as agent-agnostic prompts
 schema/snapshot.schema.json      # the shared .archeology/snapshot.json contract
@@ -28,7 +28,7 @@ Each skill is a directory with a `SKILL.md` (the format Claude Code auto-discove
 cp -r .claude <target-repo>/
 ```
 
-Claude Code auto-discovers `<target-repo>/.claude/skills/`, so the next time you launch `claude` from inside `<target-repo>`, the `/orient`, `/map`, `/quality`, and `/story` commands are available — no global install, nothing in `~/.claude/`.
+Claude Code auto-discovers `<target-repo>/.claude/skills/`, so the next time you launch `claude` from inside `<target-repo>`, the `/orient`, `/map`, `/quality`, `/the-finder-outer`, and `/story` commands are available — no global install, nothing in `~/.claude/`.
 
 > **Tip:** add `/.claude/skills/` and `/.archeology/` to the target repo's `.gitignore` so you don't commit the tooling or its output into someone else's project.
 >
@@ -39,9 +39,10 @@ Claude Code auto-discovers `<target-repo>/.claude/skills/`, so the next time you
 **2. Run the skills** from inside the target repo, in order:
 
 ```
-/orient      # start here — always
-/map         # then any of these, in any order
+/orient            # start here — always
+/map               # then any of these, in any order
 /quality
+/the-finder-outer
 /story
 ```
 

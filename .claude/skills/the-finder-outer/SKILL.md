@@ -72,7 +72,7 @@ Sources of suspects, in priority order:
 1. **`/quality` hotspots** (if present) — start here, they're already found.
 2. **Largest files** — `git ls-files '*.ts' '*.tsx' '*.py' | while IFS= read -r f; do wc -l "$f"; done | sort -rn | head`. Large files are often large because no one made decisions.
 3. **Deep abstraction layers** — directories or files named `strategy`, `factory`, `provider`, `manager`, `abstract`, `base`, `*Interface`, `handler`. Grep for them; they're where fake sophistication hides.
-4. **Broad tests** — the largest test files, and tests with the most mock setup (`grep -rl "mock\|Mock\|patch\|stub"` in the test dir). These are the prime candidates for "asserts mocks, not behavior."
+4. **Broad tests** — the largest test files, and tests with the most mock setup (`grep -Erl "mock|Mock|patch|stub"` in the test dir). These are the prime candidates for "asserts mocks, not behavior."
 5. **Repeated module shapes** — directories whose subfolders all have the identical file layout (the AI-uniformity signal). These often hide copy-paste that should've been one abstraction — or a fake abstraction that wasn't extracted.
 
 Pick **5–10 suspects total**, spanning a few categories. Record them in a working list. Write snapshot.
@@ -151,7 +151,7 @@ Print the report in this format (no grade — findings stand on their evidence):
 ### Fake abstractions
 | Abstraction | Where | Promised value | Actual value | Recommendation |
 |-------------|-------|----------------|--------------|----------------|
-| ... | path | what it implies it buys | what it actually buys (e.g. "1 impl, 1 caller") | delete / simplify / keep |
+| ... | path | what it implies it buys | what it actually buys (e.g. "1 impl, 1 caller") | delete / simplify / keep / verify-first |
 
 ### Tests that don't prove much
 [examples: test path → what it asserts → why that doesn't increase trust (asserts a mock, locks in junk, happy-path only)]
@@ -169,7 +169,7 @@ Print the report in this format (no grade — findings stand on their evidence):
 
 Record findings under `snapshot.finder_outer`:
 - `verdict` (string)
-- `highest_risk_smells` (array of `{ path, smell, evidence, risk }`)
+- `highest_risk_smells` (array of `{ path, smell, evidence, risk, confidence }`) — include the `confirmed`/`suspicious` label assigned in Step 2
 - `fake_abstractions` (array of `{ name, path, promised_value, actual_value, recommendation }`)
 - `low_value_tests` (array of strings)
 - `simplify_first` (string)
