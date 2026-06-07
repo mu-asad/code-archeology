@@ -3,7 +3,7 @@
 > **Agent-agnostic version.** Works with any agent that has terminal access and can read/write files — Claude Code, GitHub Copilot agent, Codex, Cursor, etc.
 >
 > **How to use:**
-> - *Claude Code:* use `.claude/skills/quality.md` — invoked automatically via `/quality`
+> - *Claude Code:* use `.claude/skills/quality/SKILL.md` — invoked automatically via `/quality`
 > - *Copilot agent / Cursor:* paste this prompt or reference it with `@workspace prompts/quality.md`, then say "run the quality analysis on [path]"
 > - *Any other agent:* paste the prompt content directly and specify the target repo path
 >

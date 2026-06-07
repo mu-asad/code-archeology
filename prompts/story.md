@@ -3,7 +3,7 @@
 > **Agent-agnostic version.** Works with any agent that has terminal access and can read/write files — Claude Code, GitHub Copilot agent, Codex, Cursor, etc.
 >
 > **How to use:**
-> - *Claude Code:* use `.claude/skills/story.md` — invoked automatically via `/story`
+> - *Claude Code:* use `.claude/skills/story/SKILL.md` — invoked automatically via `/story`
 > - *Copilot agent / Cursor:* paste this prompt or reference it with `@workspace prompts/story.md`, then say "run the story analysis on [path]"
 > - *Any other agent:* paste the prompt content directly and specify the target repo path
 >

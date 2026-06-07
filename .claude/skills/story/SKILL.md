@@ -1,3 +1,9 @@
+---
+name: story
+description: Tell the story of how a codebase evolved — origins, pivots, abandoned work, and what the git history reveals about the project's trajectory. Falls back to structural inference for single-commit or AI-generated repos. Use when the user asks how a codebase came to be, how it evolved, or runs /story. Works best after /orient; reads and writes .archeology/snapshot.json.
+user-invocable: true
+---
+
 # story
 
 Tell the story of how this codebase evolved. What was built first? Where did the pivots happen? What was abandoned? Git history is an archaeological record — this skill reads it like one.

@@ -6,6 +6,19 @@ A collection of Claude Code skills for understanding large, unfamiliar codebases
 
 ---
 
+## Repository layout
+
+```
+.claude/skills/<name>/SKILL.md   # the Claude Code skills (orient, map, quality, story)
+.claude/settings.json            # git-command allowlist bundled with the skills
+prompts/<name>.md                # the same skills as agent-agnostic prompts
+schema/snapshot.schema.json      # the shared .archeology/snapshot.json contract
+```
+
+Each skill is a directory with a `SKILL.md` (the format Claude Code auto-discovers) — not a flat file.
+
+---
+
 ## Quick start
 
 **1. Copy the skills into the repo you want to analyze.** Copy the whole `.claude/` directory so the bundled `settings.json` (which allowlists the git commands the skills run) comes along — otherwise you'll get repeated permission prompts:

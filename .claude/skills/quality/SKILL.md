@@ -1,3 +1,9 @@
+---
+name: quality
+description: Assess whether a codebase is actually well-built — not just whether it works. Produces structural, intentional, and craft-quality signals plus a human-readable verdict and grade, with attention to AI-generation patterns. Use when the user asks how good, well-built, or trustworthy a codebase is, or runs /quality. Requires /orient first; reads and writes .archeology/snapshot.json.
+user-invocable: true
+---
+
 # quality
 
 Assess the craft and quality of a codebase. Not just "does it work" — **is it well-built?** This skill produces three distinct signals: structural quality (measurable), intentional quality (does it do what it claims?), and craft quality (the human verdict).

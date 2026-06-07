@@ -3,7 +3,7 @@
 > **Agent-agnostic version.** Works with any agent that has terminal access and can read/write files — Claude Code, GitHub Copilot agent, Codex, Cursor, etc.
 >
 > **How to use:**
-> - *Claude Code:* use `.claude/skills/map.md` — invoked automatically via `/map`
+> - *Claude Code:* use `.claude/skills/map/SKILL.md` — invoked automatically via `/map`
 > - *Copilot agent / Cursor:* paste this prompt or reference it with `@workspace prompts/map.md`, then say "run the map analysis on [path]"
 > - *Any other agent:* paste the prompt content directly and specify the target repo path
 >

@@ -3,7 +3,7 @@
 > **Agent-agnostic version.** Works with any agent that has terminal access and can read/write files — Claude Code, GitHub Copilot agent, Codex, Cursor, etc.
 >
 > **How to use:**
-> - *Claude Code:* use `.claude/skills/orient.md` — invoked automatically via `/orient`
+> - *Claude Code:* use `.claude/skills/orient/SKILL.md` — invoked automatically via `/orient`
 > - *Copilot agent / Cursor:* paste this prompt or reference it with `@workspace prompts/orient.md`, then say "run the orient analysis on [path]"
 > - *Any other agent:* paste the prompt content directly and specify the target repo path
 >

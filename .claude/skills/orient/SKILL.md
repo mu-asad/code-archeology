@@ -1,3 +1,9 @@
+---
+name: orient
+description: Produce a plain-English product orientation for an unfamiliar codebase — what it is, who it's for, what it does, and how mature it is. The entry-point skill for code-archeology analysis; run before map, quality, or story. Use when the user wants to understand a large or AI-generated codebase, or runs /orient. Writes findings to .archeology/snapshot.json.
+user-invocable: true
+---
+
 # orient
 
 Produce a plain-English product orientation for an unfamiliar codebase. Answer: **what is this, who is it for, and what does it actually do?** — in human terms, not technical ones.

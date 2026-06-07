@@ -1,3 +1,9 @@
+---
+name: map
+description: Produce a structural map of a codebase — logical layers, data flows, cross-cutting concerns, and a Mermaid architecture diagram. Use when the user wants to understand how a codebase is organized or how a request flows through it, or runs /map. Requires /orient to have run first; reads and writes .archeology/snapshot.json.
+user-invocable: true
+---
+
 # map
 
 Produce a structural map of the codebase: logical layers, data flows, and how the pieces connect. The goal is a mental model you can navigate by — not a file tree, but a *system diagram* with enough annotation to understand what talks to what and why.
