@@ -70,10 +70,13 @@ Each skill prints a human-readable report **and** writes structured artifacts in
 
 ```
 .archeology/
+  report.md         # ← aggregated human-readable report — every skill's output in one file
   snapshot.json     # shared structured findings — all skills read & write this
-  map.mmd           # Mermaid architecture diagram (from /map)
-  story.md          # prose development narrative (from /story)
+  map.mmd           # standalone Mermaid architecture diagram (from /map)
+  story.md          # standalone prose development narrative (from /story)
 ```
+
+**`report.md` is the one to read.** Instead of scrolling the console, open it for a single document that aggregates each skill's output — the orientation, the system map (with the Mermaid diagram embedded inline), the quality verdict, and the development story. Each skill writes its own marker-delimited section, so it fills in as you run more skills and updates cleanly on re-runs, in any order.
 
 ### Example: what `/orient` prints
 
