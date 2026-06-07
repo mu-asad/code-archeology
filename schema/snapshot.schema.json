@@ -1,0 +1,303 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Archeology Snapshot",
+  "description": "Shared artifact written and read by all code-archeology skills. Lives at .archeology/snapshot.json in the analyzed repo.",
+  "type": "object",
+  "properties": {
+    "meta": {
+      "type": "object",
+      "description": "Snapshot bookkeeping",
+      "properties": {
+        "repo": { "type": "string", "description": "Absolute path to analyzed repo root" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" },
+        "skills_run": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Skills that have written to this snapshot, in order"
+        }
+      },
+      "required": ["repo", "created_at", "updated_at", "skills_run"]
+    },
+
+    "coverage": {
+      "type": "object",
+      "description": "Tracks what the agent has and hasn't read — prevents re-reading and enables resumability",
+      "properties": {
+        "analyzed": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "File/directory paths that have been read and processed"
+        },
+        "queued": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Paths identified as relevant but not yet processed"
+        },
+        "skipped": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "path": { "type": "string" },
+              "reason": { "type": "string" }
+            },
+            "required": ["path", "reason"]
+          },
+          "description": "Paths explicitly skipped and why (generated files, vendored deps, etc.)"
+        }
+      },
+      "required": ["analyzed", "queued", "skipped"]
+    },
+
+    "stack": {
+      "type": "object",
+      "description": "Detected technologies, languages, and frameworks",
+      "properties": {
+        "languages": {
+          "type": "object",
+          "description": "Language name -> estimated percentage of codebase",
+          "additionalProperties": { "type": "number" }
+        },
+        "frameworks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "layer": { "type": "string", "enum": ["frontend", "backend", "data", "infra", "testing", "tooling"] },
+              "confidence": { "type": "string", "enum": ["certain", "likely", "possible"] }
+            }
+          }
+        },
+        "services": {
+          "type": "array",
+          "description": "Distinct runtime services (from docker-compose, k8s, etc.)",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "role": { "type": "string" },
+              "port": { "type": "number" },
+              "depends_on": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "external_dependencies": {
+          "type": "array",
+          "description": "Notable third-party services the app calls out to (APIs, DBs, queues, etc.)",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "purpose": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+
+    "product": {
+      "type": "object",
+      "description": "Human-level understanding of what the product is",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "description": "1-3 sentence plain-English description of what this product does and who it's for"
+        },
+        "domain": {
+          "type": "string",
+          "description": "Problem domain (e.g. 'developer tooling', 'e-commerce', 'data pipeline', 'content management')"
+        },
+        "audience": {
+          "type": "string",
+          "description": "Who the intended users are"
+        },
+        "maturity": {
+          "type": "string",
+          "enum": ["prototype", "mvp", "production", "legacy", "unknown"],
+          "description": "Estimated maturity level of the codebase"
+        },
+        "confidence": {
+          "type": "string",
+          "enum": ["high", "medium", "low"],
+          "description": "How confident the orient skill is in its product assessment"
+        }
+      }
+    },
+
+    "structure": {
+      "type": "object",
+      "description": "Application structure — written by multiple skills: orient writes entry_points, public_surface, and domain_model; map writes layers and cross_cutting",
+      "properties": {
+        "entry_points": {
+          "type": "array",
+          "description": "Where execution starts — written by orient",
+          "items": {
+            "type": "object",
+            "properties": {
+              "path": { "type": "string" },
+              "type": { "type": "string", "description": "e.g. 'http-server', 'cli', 'cron', 'worker'" },
+              "description": { "type": "string" }
+            }
+          }
+        },
+        "public_surface": {
+          "type": "array",
+          "description": "Public routes, endpoints, or CLI commands — written by orient. Kept separate from layers to avoid conflicting with map's logical layer objects.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "method": { "type": "string", "description": "HTTP method or 'CLI' / 'GQL' / 'RPC'" },
+              "path": { "type": "string", "description": "Route path or command name" },
+              "description": { "type": "string" },
+              "source_file": { "type": "string" }
+            },
+            "required": ["method", "path"]
+          }
+        },
+        "layers": {
+          "type": "array",
+          "description": "Logical architecture layers of the application — written by map",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "paths": { "type": "array", "items": { "type": "string" } },
+              "responsibility": { "type": "string" }
+            }
+          }
+        },
+        "cross_cutting": {
+          "type": "array",
+          "description": "Concerns that touch every layer (auth, logging, error handling, validation) — written by map",
+          "items": {
+            "type": "object",
+            "properties": {
+              "concern": { "type": "string", "description": "e.g. 'auth', 'logging', 'error handling', 'validation'" },
+              "how_handled": { "type": "string" },
+              "gaps": { "type": "string" }
+            }
+          }
+        },
+        "domain_model": {
+          "type": "array",
+          "description": "Core domain entities — written by orient (may be extended by future skills)",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "description": { "type": "string" },
+              "defined_in": { "type": "array", "items": { "type": "string" } },
+              "cross_language": {
+                "type": "boolean",
+                "description": "True if this entity appears in multiple languages — flag for consistency check"
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "quality": {
+      "type": "object",
+      "description": "Code quality signals — filled in by the quality skill",
+      "properties": {
+        "overall_grade": {
+          "type": "string",
+          "enum": ["A", "B", "C", "D", "F"],
+          "description": "Holistic craft grade, not just correctness"
+        },
+        "structural": {
+          "type": "object",
+          "properties": {
+            "complexity_hotspots": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "path": { "type": "string" },
+                  "reason": { "type": "string" }
+                }
+              }
+            },
+            "dead_code_indicators": { "type": "array", "items": { "type": "string" } },
+            "duplication_areas": { "type": "array", "items": { "type": "string" } },
+            "test_coverage_assessment": { "type": "string" }
+          }
+        },
+        "intentional": {
+          "type": "object",
+          "description": "Does the code actually do what it claims?",
+          "properties": {
+            "silent_failures": { "type": "array", "items": { "type": "string" } },
+            "fake_validation": { "type": "array", "items": { "type": "string" } },
+            "mismatched_abstractions": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "craft": {
+          "type": "object",
+          "description": "Qualitative craft assessment",
+          "properties": {
+            "narrative": {
+              "type": "string",
+              "description": "A paragraph describing the code's personality, where craft breaks down, and overall feel"
+            },
+            "ai_generation_signals": {
+              "type": "array",
+              "description": "Patterns that suggest AI generation (not necessarily bad, just notable)",
+              "items": { "type": "string" }
+            },
+            "strengths": { "type": "array", "items": { "type": "string" } },
+            "weaknesses": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      }
+    },
+
+    "story": {
+      "type": "object",
+      "description": "Development narrative — written by the story skill",
+      "properties": {
+        "timeline": {
+          "type": "array",
+          "description": "Key events in chronological order",
+          "items": {
+            "type": "object",
+            "properties": {
+              "date": { "type": "string" },
+              "event": { "type": "string" }
+            }
+          }
+        },
+        "pivots": {
+          "type": "array",
+          "description": "Points where direction noticeably changed",
+          "items": { "type": "string" }
+        },
+        "fossils": {
+          "type": "array",
+          "description": "Abandoned or incomplete areas inferred from history",
+          "items": { "type": "string" }
+        },
+        "churn_hotspots": {
+          "type": "array",
+          "description": "Files with the most change history",
+          "items": {
+            "type": "object",
+            "properties": {
+              "path": { "type": "string" },
+              "change_count": { "type": "number" },
+              "note": { "type": "string" }
+            }
+          }
+        },
+        "narrative_file": {
+          "type": "string",
+          "description": "Path to the prose narrative file, relative to .archeology/ — typically story.md"
+        }
+      }
+    }
+  },
+  "required": ["meta", "coverage", "stack", "product"]
+}
