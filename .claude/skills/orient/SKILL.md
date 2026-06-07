@@ -197,8 +197,7 @@ The file uses marker-delimited sections so skills can run in any order and re-ru
 - **Write your section** between markers, just after the header. If the block already exists, replace its contents; otherwise insert it. Keep sections in this order: `orient`, `map`, `quality`, `story`.
   ```markdown
   <!-- section:orient -->
-  ## Orientation
-  <the exact content you printed to the console in Step 6>
+  <the exact content you printed to the console in Step 6, verbatim — it already begins with `## Orientation`, so do not add another heading>
   <!-- /section:orient -->
   ```
 - **Update** the `last updated` timestamp in the header on every write.
