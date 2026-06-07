@@ -18,6 +18,8 @@ Works best on repos with meaningful commit history. On AI-generated repos with s
 
 **Target repo:** [specify path, or assume current working directory]
 
+> **Resolve the target root first.** If a path is given — or you launched the agent from a different directory — `cd` into the target repo before running any steps, or prefix all paths with it and use `git -C <path>` for git commands. Every step below assumes commands run **inside the target repo**.
+
 ---
 
 ## Step 0 — Load snapshot
@@ -47,9 +49,20 @@ git log --format="%ad" --date=format:"%Y-%m" | sort | uniq -c
 # Files with most change history (churn)
 git log --name-only --format="" | grep -v "^$" | sort | uniq -c | sort -rn | head -15
 
-# Largest single commits (potential pivots or bulk AI generation)
-git log --oneline --shortstat | grep -E "files? changed" | \
-  awk '{print $1, $4, $7}' | sort -k2 -rn | head -10
+# Largest single commits by lines changed (potential pivots or bulk AI generation).
+# The "C " sentinel marks hash lines so the SHA survives the pipe and stays
+# associated with its stat line.
+git log --shortstat --pretty=format:'C %h %s' | awk '
+  /^C / { h = $2 }
+  /files? changed/ {
+    ins = del = 0
+    for (i = 1; i <= NF; i++) {
+      if ($i ~ /insertion/) ins = $(i-1)
+      if ($i ~ /deletion/)  del = $(i-1)
+    }
+    print ins + del, h
+  }
+' | sort -rn | head -10
 ```
 
 Identify:
@@ -116,8 +129,8 @@ For each pivot, write one sentence:
 git log --after="6 months ago" --name-only --format="" | sort -u > /tmp/recent_files.txt
 # then compare against find . -type f
 
-# Unmerged branches
-git branch -a | grep -v HEAD
+# All branches (local + remote), read-only listing
+git for-each-ref --format='%(refname:short)' refs/heads refs/remotes
 ```
 
 Also look for:

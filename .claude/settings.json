@@ -1,23 +1,28 @@
 {
   "permissions": {
     "allow": [
+      "Bash(git log *)",
+      "Bash(git diff *)",
+      "Bash(git show *)",
+      "Bash(git shortlog *)",
+      "Bash(git rev-list *)",
+      "Bash(git rev-parse *)",
+      "Bash(git ls-files *)",
+      "Bash(git for-each-ref *)",
+      "Bash(git describe *)",
+      "Bash(git cat-file *)",
+      "Bash(git status *)",
       "Bash(git -C * log *)",
       "Bash(git -C * diff *)",
       "Bash(git -C * show *)",
       "Bash(git -C * shortlog *)",
       "Bash(git -C * rev-list *)",
       "Bash(git -C * rev-parse *)",
-      "Bash(git -C * branch *)",
       "Bash(git -C * ls-files *)",
       "Bash(git -C * for-each-ref *)",
-      "Bash(git -C * stash *)",
       "Bash(git -C * describe *)",
-      "Bash(git -C * remote *)",
       "Bash(git -C * cat-file *)",
-      "Bash(git rev-list *)",
-      "Bash(git log --name-only *)",
-      "Bash(git log --format=*)",
-      "Bash(git log --after=*)"
+      "Bash(git -C * status *)"
     ]
   }
 }

@@ -182,7 +182,7 @@
         },
         "domain_model": {
           "type": "array",
-          "description": "Core domain entities — written by orient, extended by domain-glossary skill",
+          "description": "Core domain entities — written by orient (may be extended by future skills)",
           "items": {
             "type": "object",
             "properties": {

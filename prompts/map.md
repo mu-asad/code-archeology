@@ -16,6 +16,8 @@ Produce a structural map of the codebase: logical layers, data flows, and how th
 
 **Target repo:** [specify path, or assume current working directory]
 
+> **Resolve the target root first.** If a path is given — or you launched the agent from a different directory — `cd` into the target repo before running any steps, or prefix all paths with it and use `git -C <path>` for git commands. Every step below assumes commands run **inside the target repo**.
+
 ---
 
 ## Step 0 — Load snapshot

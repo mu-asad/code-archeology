@@ -19,7 +19,7 @@ allowed-tools:
   - Bash(git log *)
   - Bash(git diff *)
   - Bash(git show *)
-  - Bash(git branch *)
+  - Bash(git for-each-ref *)
   - Bash(git shortlog *)
   - Bash(git rev-list *)
   - Bash(git status *)
@@ -40,6 +40,8 @@ Works best on codebases with meaningful commit history. On AI-generated repos wi
 ```
 
 If no path is given, use the current working directory.
+
+**Resolve the target root first.** If a path *is* given — or the repo lives somewhere other than your cwd (e.g. you launched from the code-archeology repo and passed the target via `--add-dir`) — treat that path as the target root: `cd` into it before running any steps, or prefix every path with it and use `git -C <path>` for git commands. Every step below assumes commands run **inside the target repo**; don't analyze your current directory by accident.
 
 ---
 
@@ -72,9 +74,20 @@ git log --format="%ad" --date=format:"%Y-%m" | sort | uniq -c
 # Files with most change history (churn)
 git log --name-only --format="" | grep -v "^$" | sort | uniq -c | sort -rn | head -15
 
-# Largest single commits (potential pivots or bulk-generation)
-git log --oneline --shortstat | grep -E "files? changed" | \
-  awk '{print $1, $4, $7}' | sort -k2 -rn | head -10
+# Largest single commits by lines changed (potential pivots or bulk-generation).
+# The "C " sentinel marks hash lines so the SHA survives the pipe and stays
+# associated with its stat line.
+git log --shortstat --pretty=format:'C %h %s' | awk '
+  /^C / { h = $2 }
+  /files? changed/ {
+    ins = del = 0
+    for (i = 1; i <= NF; i++) {
+      if ($i ~ /insertion/) ins = $(i-1)
+      if ($i ~ /deletion/)  del = $(i-1)
+    }
+    print ins + del, h
+  }
+' | sort -rn | head -10
 ```
 
 From this, identify:
@@ -141,7 +154,7 @@ For each identified pivot, read the commit(s) and write a one-sentence descripti
 Look for:
 - Directories that exist but have no recent commits (`git log --after="[6 months ago]" -- path/`)
 - Files with TODO/FIXME comments that reference features never completed
-- Branches that were never merged (`git branch -a | grep -v HEAD`)
+- Branches that were never merged (`git for-each-ref --format='%(refname:short)' refs/heads refs/remotes`)
 - Packages in dependencies that aren't imported anywhere (found in `/quality`)
 
 These are the fossils — they tell you what the author intended to build but didn't finish.

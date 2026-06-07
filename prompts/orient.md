@@ -17,6 +17,8 @@ This prompt is designed to work on large repos without choking on context. Read 
 
 **Target repo:** [specify path, or assume current working directory]
 
+> **Resolve the target root first.** If a path is given — or you launched the agent from a different directory — `cd` into the target repo before running any steps, or prefix all paths with it and use `git -C <path>` for git commands. Every step below assumes commands run **inside the target repo**.
+
 ---
 
 ## Step 0 — Initialize or resume snapshot
@@ -24,7 +26,7 @@ This prompt is designed to work on large repos without choking on context. Read 
 Before reading any code, check if `.archeology/snapshot.json` already exists in the target repo.
 
 - **If it exists:** load it. Check `meta.skills_run` — if `orient` is already listed, report the existing findings and ask if the user wants to re-run. If resuming an interrupted run, continue from `coverage.queued`.
-- **If it doesn't exist:** create the `.archeology/` directory and initialize a fresh snapshot. Use the schema at `schema/snapshot.schema.json` in this repo as the structure. The very first write must already satisfy the schema's required top-level keys, so initialize all of them — not just `meta`:
+- **If it doesn't exist:** create the `.archeology/` directory and initialize a fresh snapshot using the structure below. (The canonical contract is `schema/snapshot.schema.json` in the code-archeology repo — it does **not** need to be present in the target repo; this skeleton is enough to initialize.) The very first write must already satisfy the required top-level keys, so initialize all of them — not just `meta`:
 
   ```json
   {

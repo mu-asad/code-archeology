@@ -19,7 +19,7 @@ allowed-tools:
   - Bash(git log *)
   - Bash(git diff *)
   - Bash(git show *)
-  - Bash(git branch *)
+  - Bash(git for-each-ref *)
   - Bash(git shortlog *)
   - Bash(git rev-list *)
   - Bash(git status *)
@@ -41,6 +41,8 @@ This skill is designed to work on large repos without choking on context. It rea
 
 If no path is given, use the current working directory.
 
+**Resolve the target root first.** If a path *is* given — or the repo lives somewhere other than your cwd (e.g. you launched from the code-archeology repo and passed the target via `--add-dir`) — treat that path as the target root: `cd` into it before running any steps, or prefix every path with it and use `git -C <path>` for git commands. Every step below assumes commands run **inside the target repo**; don't analyze your current directory by accident.
+
 ---
 
 ## Step 0 — Initialize or resume snapshot
@@ -48,7 +50,7 @@ If no path is given, use the current working directory.
 Before reading any code, check if `.archeology/snapshot.json` already exists in the target repo.
 
 - **If it exists**: load it. Check `meta.skills_run` — if `orient` is already in there, report the existing findings and ask the user if they want to re-run. If resuming an interrupted run, continue from `coverage.queued`.
-- **If it doesn't exist**: create `.archeology/` directory and initialize a fresh snapshot following the schema at `schema/snapshot.schema.json` (in this skills repo). The very first write must already satisfy the schema's required top-level keys, so initialize all of them — not just `meta`:
+- **If it doesn't exist**: create `.archeology/` directory and initialize a fresh snapshot using the structure below. (The canonical contract is `schema/snapshot.schema.json` in the code-archeology repo — you do **not** need that file present in the target repo; the skeleton here is sufficient to initialize.) The very first write must already satisfy the required top-level keys, so initialize all of them — not just `meta`:
 
   ```json
   {
