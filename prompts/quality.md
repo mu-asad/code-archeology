@@ -37,10 +37,12 @@ Check `snapshot.product.summary` and `snapshot.structure` for domain context —
 Find the largest files without reading them first:
 
 ```bash
-# Excludes and the wc invocation are kept inside `find` so no `xargs` is needed.
-find . \( -name "*.ts" -o -name "*.tsx" -o -name "*.py" \) \
-  -not -path "*/node_modules/*" -not -path "*/.venv/*" -not -path "*/dist/*" \
-  -exec wc -l {} + 2>/dev/null | sort -rn | head -20
+# Use git's own tracked-file list — it respects .gitignore, so vendored and
+# generated files (node_modules, dist, .venv, build, etc.) are already excluded.
+# `IFS= read -r` keeps it correct for paths containing spaces.
+git ls-files '*.ts' '*.tsx' '*.py' \
+  | while IFS= read -r f; do wc -l "$f"; done \
+  | sort -rn | head -20
 ```
 
 For the top 5: read first 80 lines and skim structure. Large because domain demands it, or because no one decomposed it?
@@ -240,6 +242,8 @@ Besides printing to the console, write the **same** content into the shared `.ar
   <!-- /section:quality -->
   ```
 - Update the `last updated` timestamp in the header.
+
+Then write the snapshot one final time with `quality` added to `meta.skills_run`.
 
 ---
 

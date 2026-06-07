@@ -200,6 +200,8 @@ Besides printing to the console, write the **same** content into the shared `.ar
 - **Embed the Mermaid diagram inline** in the section as a fenced ` ```mermaid ` block (so the report renders standalone), in addition to saving the standalone `.archeology/map.mmd`.
 - Update the `last updated` timestamp in the header.
 
+Then write the snapshot one final time with `map` added to `meta.skills_run`.
+
 ---
 
 ## Context budget rules

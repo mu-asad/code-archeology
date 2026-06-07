@@ -212,6 +212,8 @@ Besides printing to the console, write the **same** content into the shared `.ar
 - The standalone `.archeology/story.md` still gets written as before; this embeds the same narrative inline so the aggregated report is self-contained.
 - Update the `last updated` timestamp in the header.
 
+Then write the snapshot one final time with `story` added to `meta.skills_run`.
+
 ---
 
 ## Context budget rules

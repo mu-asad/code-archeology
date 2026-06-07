@@ -49,6 +49,8 @@ If no path is given, use the current working directory.
 
 Load `.archeology/snapshot.json`. If it doesn't exist, run `/orient` first.
 
+If `story` is already in `meta.skills_run`, report existing findings and ask if the user wants to re-run.
+
 `/story` works without `/map` or `/quality` but benefits from both — domain context makes the narrative richer.
 
 **Write snapshot after every major step.**
@@ -233,6 +235,8 @@ Besides printing to the console, write the **same** content into the shared `.ar
   ```
 - The standalone `.archeology/story.md` still gets written as before; this embeds the same narrative inline so the aggregated report is self-contained.
 - Update the `last updated` timestamp in the header.
+
+Then write the snapshot one final time with `story` added to `meta.skills_run`.
 
 ---
 

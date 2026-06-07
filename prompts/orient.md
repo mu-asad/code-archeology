@@ -176,6 +176,8 @@ The file uses marker-delimited sections so skills can run in any order and re-ru
   ```
 - **Update** the `last updated` timestamp in the header on every write.
 
+Then write the snapshot one final time with `orient` recorded in `meta.skills_run`.
+
 ---
 
 ## Context budget rules

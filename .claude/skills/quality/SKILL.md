@@ -20,6 +20,7 @@ allowed-tools:
   - Bash(git diff *)
   - Bash(git show *)
   - Bash(git for-each-ref *)
+  - Bash(git ls-files *)
   - Bash(git shortlog *)
   - Bash(git rev-list *)
   - Bash(git status *)
@@ -64,10 +65,12 @@ If `quality` is already in `meta.skills_run`, report existing findings and ask i
 Find the largest, most complex files. Don't read them yet — identify them first.
 
 ```bash
-# Excludes and the wc invocation are kept inside `find` so no `xargs` is needed.
-find . \( -name "*.ts" -o -name "*.tsx" -o -name "*.py" \) \
-  -not -path "*/node_modules/*" -not -path "*/.venv/*" -not -path "*/dist/*" \
-  -exec wc -l {} + 2>/dev/null | sort -rn | head -20
+# Use git's own tracked-file list — it respects .gitignore, so vendored and
+# generated files (node_modules, dist, .venv, build, etc.) are already excluded.
+# `IFS= read -r` keeps it correct for paths containing spaces.
+git ls-files '*.ts' '*.tsx' '*.py' \
+  | while IFS= read -r f; do wc -l "$f"; done \
+  | sort -rn | head -20
 ```
 
 For the top 5 largest files: read the first 80 lines and skim the structure. Are they large because the domain demands it, or because no one bothered to decompose them?
@@ -279,6 +282,8 @@ Besides printing to the console, write the **same** content into the shared `.ar
   <!-- /section:quality -->
   ```
 - Update the `last updated` timestamp in the header.
+
+Then write the snapshot one final time with `quality` added to `meta.skills_run`.
 
 ---
 
