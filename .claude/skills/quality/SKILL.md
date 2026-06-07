@@ -41,7 +41,7 @@ Assess the craft and quality of a codebase. Not just "does it work" — **is it 
 
 If no path is given, use the current working directory.
 
-**Resolve the target root first.** If a path *is* given — or the repo lives somewhere other than your cwd (e.g. you launched from the code-archeology repo and passed the target via `--add-dir`) — treat that path as the target root: `cd` into it before running any steps, or prefix every path with it and use `git -C <path>` for git commands. Every step below assumes commands run **inside the target repo**; don't analyze your current directory by accident.
+**Resolve the target root first.** If a path *is* given — or the repo lives somewhere other than your cwd (e.g. you launched from the code-archeology repo and passed the target via `--add-dir`) — treat that path as the target root and `cd` into it before running any steps, so every command (including bare `git`) operates on that repo. Every step below assumes commands run **inside the target repo**; don't analyze your current directory by accident.
 
 ---
 
@@ -64,9 +64,10 @@ If `quality` is already in `meta.skills_run`, report existing findings and ask i
 Find the largest, most complex files. Don't read them yet — identify them first.
 
 ```bash
-find . -name "*.ts" -o -name "*.tsx" -o -name "*.py" | \
-  grep -v node_modules | grep -v .venv | grep -v dist | \
-  xargs wc -l 2>/dev/null | sort -rn | head -20
+# Excludes and the wc invocation are kept inside `find` so no `xargs` is needed.
+find . \( -name "*.ts" -o -name "*.tsx" -o -name "*.py" \) \
+  -not -path "*/node_modules/*" -not -path "*/.venv/*" -not -path "*/dist/*" \
+  -exec wc -l {} + 2>/dev/null | sort -rn | head -20
 ```
 
 For the top 5 largest files: read the first 80 lines and skim the structure. Are they large because the domain demands it, or because no one bothered to decompose them?

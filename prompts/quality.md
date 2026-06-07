@@ -16,7 +16,7 @@ Assess the craft and quality of a codebase. Not just "does it work" — **is it 
 
 **Target repo:** [specify path, or assume current working directory]
 
-> **Resolve the target root first.** If a path is given — or you launched the agent from a different directory — `cd` into the target repo before running any steps, or prefix all paths with it and use `git -C <path>` for git commands. Every step below assumes commands run **inside the target repo**.
+> **Resolve the target root first.** If a path is given — or you launched the agent from a different directory — `cd` into the target repo before running any steps, so every command operates on that repo. Every step below assumes commands run **inside the target repo**.
 
 ---
 
@@ -37,9 +37,10 @@ Check `snapshot.product.summary` and `snapshot.structure` for domain context —
 Find the largest files without reading them first:
 
 ```bash
-find . -name "*.ts" -o -name "*.tsx" -o -name "*.py" | \
-  grep -v node_modules | grep -v .venv | grep -v dist | \
-  xargs wc -l 2>/dev/null | sort -rn | head -20
+# Excludes and the wc invocation are kept inside `find` so no `xargs` is needed.
+find . \( -name "*.ts" -o -name "*.tsx" -o -name "*.py" \) \
+  -not -path "*/node_modules/*" -not -path "*/.venv/*" -not -path "*/dist/*" \
+  -exec wc -l {} + 2>/dev/null | sort -rn | head -20
 ```
 
 For the top 5: read first 80 lines and skim structure. Large because domain demands it, or because no one decomposed it?

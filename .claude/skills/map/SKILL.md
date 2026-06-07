@@ -41,7 +41,7 @@ Produce a structural map of the codebase: logical layers, data flows, and how th
 
 If no path is given, use the current working directory.
 
-**Resolve the target root first.** If a path *is* given — or the repo lives somewhere other than your cwd (e.g. you launched from the code-archeology repo and passed the target via `--add-dir`) — treat that path as the target root: `cd` into it before running any steps, or prefix every path with it and use `git -C <path>` for git commands. Every step below assumes commands run **inside the target repo**; don't analyze your current directory by accident.
+**Resolve the target root first.** If a path *is* given — or the repo lives somewhere other than your cwd (e.g. you launched from the code-archeology repo and passed the target via `--add-dir`) — treat that path as the target root and `cd` into it before running any steps, so every command (including bare `git`) operates on that repo. Every step below assumes commands run **inside the target repo**; don't analyze your current directory by accident.
 
 ---
 

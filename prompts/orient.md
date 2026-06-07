@@ -17,7 +17,7 @@ This prompt is designed to work on large repos without choking on context. Read 
 
 **Target repo:** [specify path, or assume current working directory]
 
-> **Resolve the target root first.** If a path is given — or you launched the agent from a different directory — `cd` into the target repo before running any steps, or prefix all paths with it and use `git -C <path>` for git commands. Every step below assumes commands run **inside the target repo**.
+> **Resolve the target root first.** If a path is given — or you launched the agent from a different directory — `cd` into the target repo before running any steps, so every command operates on that repo. Every step below assumes commands run **inside the target repo**.
 
 ---
 
