@@ -176,7 +176,7 @@ Record findings under `snapshot.finder_outer`:
 
 Then append to the aggregated `.archeology/report.md` (create it with the standard header if it doesn't exist):
 
-- Insert or replace your marker-delimited section. Keep section order `orient`, `map`, `quality`, `the-finder-outer`, `story`:
+- Insert or replace your marker-delimited section. Keep section order `orient`, `map`, `api-trace`, `quality`, `the-finder-outer`, `story`:
   ```markdown
   <!-- section:finder-outer -->
   <the same content you printed to the console, verbatim — it already begins with `## The Finder Outer`, so do not add another heading>

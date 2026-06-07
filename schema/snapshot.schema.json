@@ -299,6 +299,81 @@
       }
     },
 
+    "api_trace": {
+      "type": "object",
+      "description": "API boundary-to-core traces — written by /api-trace. Inventory, per-method trace detail, and confidence labels.",
+      "properties": {
+        "boundaries": {
+          "type": "array",
+          "description": "Discovered API boundary files (routes, resolvers, handlers, etc.)",
+          "items": { "type": "string" }
+        },
+        "inventory": {
+          "type": "array",
+          "description": "Flat list of discovered API methods with status",
+          "items": {
+            "type": "object",
+            "properties": {
+              "method": { "type": "string", "description": "HTTP verb, operation type, or RPC method" },
+              "path": { "type": "string", "description": "Route path, operation name, or handler name" },
+              "boundary_file": { "type": "string", "description": "File path (with line number if known)" },
+              "handler": { "type": "string", "description": "Handler / resolver / controller function name" },
+              "auth_middleware": { "type": "string" },
+              "trace_status": {
+                "type": "string",
+                "enum": ["pending", "traced", "partial", "ambiguous", "generated-from-convention"]
+              }
+            },
+            "required": ["method", "path", "boundary_file"]
+          }
+        },
+        "methods": {
+          "type": "array",
+          "description": "Per-method trace detail",
+          "items": {
+            "type": "object",
+            "properties": {
+              "identifier": { "type": "string", "description": "e.g. 'POST /users'" },
+              "trace_status": {
+                "type": "string",
+                "enum": ["traced", "partial", "ambiguous", "generated-from-convention"]
+              },
+              "validation": { "type": "string" },
+              "auth": { "type": "string" },
+              "service": { "type": "string" },
+              "core_logic": { "type": "string" },
+              "persistence": { "type": "string" },
+              "side_effects": { "type": "string" },
+              "response": { "type": "string" },
+              "error_handling": { "type": "string" },
+              "tests": { "type": "string" },
+              "boundary_concerns": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            },
+            "required": ["identifier", "trace_status"]
+          }
+        },
+        "untraced_or_ambiguous": {
+          "type": "array",
+          "description": "Methods that could not be fully traced, with reason",
+          "items": {
+            "type": "object",
+            "properties": {
+              "identifier": { "type": "string" },
+              "reason": { "type": "string" }
+            },
+            "required": ["identifier", "reason"]
+          }
+        },
+        "output_path": {
+          "type": "string",
+          "description": "Path to the api-trace.md file, relative to the repo root — typically .archeology/api-trace.md"
+        }
+      }
+    },
+
     "finder_outer": {
       "type": "object",
       "description": "Adversarial review findings — written by /the-finder-outer. No grade by design; findings stand on evidence.",
