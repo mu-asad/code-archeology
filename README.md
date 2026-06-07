@@ -8,19 +8,20 @@ A collection of Claude Code skills for understanding large, unfamiliar codebases
 
 ## Quick start
 
-**1. Install the skills** so Claude Code can find them. Copy both the skills **and** the bundled `settings.json` (it allowlists the git commands the skills run, so you don't get repeated permission prompts):
+**1. Copy the skills into the repo you want to analyze.** Copy the whole `.claude/` directory so the bundled `settings.json` (which allowlists the git commands the skills run) comes along — otherwise you'll get repeated permission prompts:
 
 ```bash
-# Option A — global (available in every project)
-cp -r .claude/skills/* ~/.claude/skills/
-# merge the permission allowlist into your global settings (or copy if you have none)
-cp .claude/settings.json ~/.claude/settings.json
-
-# Option B — per-project (copy the whole .claude/ so settings come along)
+# from inside this repo, with <target-repo> = the codebase you want to understand
 cp -r .claude <target-repo>/
 ```
 
+Claude Code auto-discovers `<target-repo>/.claude/skills/`, so the next time you launch `claude` from inside `<target-repo>`, the `/orient`, `/map`, `/quality`, and `/story` commands are available — no global install, nothing in `~/.claude/`.
+
+> **Tip:** add `/.claude/skills/` and `/.archeology/` to the target repo's `.gitignore` so you don't commit the tooling or its output into someone else's project.
+>
 > The allowlist only covers read-only git commands. Standard UNIX tools the skills use (`find`, `grep`, `wc`, `sort`, `head`, `tail`, etc.) are already auto-allowed by Claude Code, so no extra config is needed for them.
+>
+> **Prefer not to copy at all?** Launch from *this* repo and point the skills at the target instead: `cd code-archeology && claude --add-dir <target-repo>`, then `/orient <target-repo>`. The skills load from here and write `.archeology/` into the target.
 
 **2. Run the skills** from inside the target repo, in order:
 
