@@ -100,13 +100,14 @@ Wait — `xargs` is blocked in this allowlist. Use instead:
 
 ```bash
 git ls-files '*.ts' '*.js' '*.py' | while IFS= read -r f; do
-  grep -lE "\.get\(|\.post\(|\.put\(|\.delete\(|@router\.|@app\.route|@api_view" "$f" 2>/dev/null && echo "$f"
-done | sort -u | head -30
+  grep -qE "\.get\(|\.post\(|\.put\(|\.delete\(|@router\.|@app\.route|@api_view" "$f" 2>/dev/null && echo "$f"
+done | head -30
 ```
 
 Or grep directly across the tracked files:
 ```bash
-grep -rEl "\.get\(|\.post\(|\.put\(|\.delete\(|@router\." --include="*.ts" --include="*.js" --include="*.py" . | grep -v node_modules | grep -v dist | grep -v ".venv" | head -30
+grep -rEl "\.get\(|\.post\(|\.put\(|\.delete\(|@router\." --include="*.ts" --include="*.js" --include="*.py" . \
+  | grep -vF node_modules | grep -vF dist | grep -vF /.venv/ | head -30
 ```
 
 Group boundary files by **API domain** (e.g. `users`, `payments`, `auth`, `webhooks`) if the structure makes that natural.

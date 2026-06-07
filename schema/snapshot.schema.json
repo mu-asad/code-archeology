@@ -324,7 +324,7 @@
                 "enum": ["pending", "traced", "partial", "ambiguous", "generated-from-convention"]
               }
             },
-            "required": ["method", "path", "boundary_file"]
+            "required": ["method", "path", "boundary_file", "trace_status"]
           }
         },
         "methods": {

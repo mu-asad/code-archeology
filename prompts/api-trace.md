@@ -65,7 +65,7 @@ Discover boundary files using git's tracked-file list (respects .gitignore):
 ```bash
 grep -rEl "\.get\(|\.post\(|\.put\(|\.delete\(|@router\.|@app\.route|@api_view" \
   --include="*.ts" --include="*.js" --include="*.py" . \
-  | grep -vE "node_modules|dist|\.venv|build" | head -30
+  | grep -vF node_modules | grep -vF dist | grep -vF /.venv/ | grep -vF /build/ | head -30
 ```
 
 Group boundary files by API domain if the structure makes that natural. If `--api <name>` was passed, filter to matching files.
