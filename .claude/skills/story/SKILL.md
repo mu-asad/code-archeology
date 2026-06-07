@@ -2,6 +2,27 @@
 name: story
 description: Tell the story of how a codebase evolved — origins, pivots, abandoned work, and what the git history reveals about the project's trajectory. Falls back to structural inference for single-commit or AI-generated repos. Use when the user asks how a codebase came to be, how it evolved, or runs /story. Works best after /orient; reads and writes .archeology/snapshot.json.
 user-invocable: true
+allowed-tools:
+  - Read
+  - Write
+  - Glob
+  - Grep
+  - Bash(ls *)
+  - Bash(cat *)
+  - Bash(find *)
+  - Bash(wc *)
+  - Bash(head *)
+  - Bash(tail *)
+  - Bash(sort *)
+  - Bash(uniq *)
+  - Bash(grep *)
+  - Bash(git log *)
+  - Bash(git diff *)
+  - Bash(git show *)
+  - Bash(git branch *)
+  - Bash(git shortlog *)
+  - Bash(git rev-list *)
+  - Bash(git status *)
 ---
 
 # story

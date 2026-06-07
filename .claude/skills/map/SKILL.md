@@ -2,6 +2,27 @@
 name: map
 description: Produce a structural map of a codebase — logical layers, data flows, cross-cutting concerns, and a Mermaid architecture diagram. Use when the user wants to understand how a codebase is organized or how a request flows through it, or runs /map. Requires /orient to have run first; reads and writes .archeology/snapshot.json.
 user-invocable: true
+allowed-tools:
+  - Read
+  - Write
+  - Glob
+  - Grep
+  - Bash(ls *)
+  - Bash(cat *)
+  - Bash(find *)
+  - Bash(wc *)
+  - Bash(head *)
+  - Bash(tail *)
+  - Bash(sort *)
+  - Bash(uniq *)
+  - Bash(grep *)
+  - Bash(git log *)
+  - Bash(git diff *)
+  - Bash(git show *)
+  - Bash(git branch *)
+  - Bash(git shortlog *)
+  - Bash(git rev-list *)
+  - Bash(git status *)
 ---
 
 # map

@@ -2,6 +2,27 @@
 name: quality
 description: Assess whether a codebase is actually well-built — not just whether it works. Produces structural, intentional, and craft-quality signals plus a human-readable verdict and grade, with attention to AI-generation patterns. Use when the user asks how good, well-built, or trustworthy a codebase is, or runs /quality. Requires /orient first; reads and writes .archeology/snapshot.json.
 user-invocable: true
+allowed-tools:
+  - Read
+  - Write
+  - Glob
+  - Grep
+  - Bash(ls *)
+  - Bash(cat *)
+  - Bash(find *)
+  - Bash(wc *)
+  - Bash(head *)
+  - Bash(tail *)
+  - Bash(sort *)
+  - Bash(uniq *)
+  - Bash(grep *)
+  - Bash(git log *)
+  - Bash(git diff *)
+  - Bash(git show *)
+  - Bash(git branch *)
+  - Bash(git shortlog *)
+  - Bash(git rev-list *)
+  - Bash(git status *)
 ---
 
 # quality

@@ -171,11 +171,20 @@ The `prompts/` directory mirrors the same skills — same steps, same snapshot c
 | Agent | How to use |
 |-------|-----------|
 | Claude Code | `/orient` — auto-invoked from `.claude/skills/` |
-| GitHub Copilot agent | `@workspace prompts/orient.md` → "run this on [path]" |
+| GitHub Copilot coding agent | Reads `.claude/skills/` natively — same `SKILL.md` format (see below) |
 | Cursor | Reference `prompts/orient.md` in your prompt |
 | Any other agent | Paste the prompt content directly |
 
 The snapshot file is the same regardless of which agent runs the skill, so agents can **hand off between steps** — run `/orient` in one tool, `/quality` in another, against the same `.archeology/snapshot.json`.
+
+### Using with the GitHub Copilot coding agent
+
+Good news: **no conversion needed.** Copilot's coding agent uses the same agent-skill format as Claude Code — a directory per skill with a `SKILL.md` and `name`/`description` frontmatter — and it reads project skills from [`.claude/skills`](https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/customize-cloud-agent/add-skills) (alongside `.github/skills` and `.agents/skills`). So copying `.claude/` into your target repo makes these skills available to Copilot too.
+
+Two differences from Claude Code to know:
+
+- **Invocation is contextual, not a slash command.** Copilot picks a skill from your prompt and the skill's `description` — it has no typed `/orient`. Just ask naturally: *"orient this codebase"*, *"assess the code quality"*. (The `user-invocable: true` field is Claude-specific and Copilot ignores it.)
+- **Tool approval is via frontmatter, not `settings.json`.** Copilot doesn't read `.claude/settings.json`. Each `SKILL.md` instead carries an `allowed-tools` list pre-approving **read-only** commands (git read subcommands, `grep`, `find`, `wc`, etc.). We deliberately do **not** pre-approve blanket `bash`/`shell` — [the docs warn](https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/customize-cloud-agent/add-skills) that doing so lets prompt-injection run arbitrary commands — so Copilot will still ask before anything outside that read-only set.
 
 ---
 
