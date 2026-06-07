@@ -128,28 +128,30 @@ Write a `summary` (2–4 sentences), `domain`, `audience`, `maturity`, and `conf
 
 ## Step 6 — Output
 
-Print a human-readable orientation report:
+Print a human-readable orientation report — a single `## Orientation` title with `###` subsections (matching the shape of map/quality/story), so it nests correctly when embedded in the aggregated report in Step 7:
 
 ```
-## What is this?
+## Orientation
+
+### What is this?
 [2-4 sentence plain-English description]
 
-## Who is it for?
+### Who is it for?
 [audience + use case]
 
-## Stack at a glance
+### Stack at a glance
 [bullet list: language%, framework, key services, notable external deps]
 
-## Domain model (key entities)
+### Domain model (key entities)
 [bullet list of 5-10 core entities with one-line descriptions]
 
-## Public surface
+### Public surface
 [bullet list of most important routes/endpoints/commands]
 
-## Maturity assessment
+### Maturity assessment
 [maturity level + 1-2 sentence justification]
 
-## What to look at next
+### What to look at next
 [2-3 recommended areas for deeper investigation]
 ```
 
