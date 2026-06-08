@@ -1,6 +1,13 @@
 ---
 name: the-finder-outer
-description: Adversarial code review — find the gap between "passes checks" and "I'd trust this in production." Hunts code that satisfies linters, tests, and type checkers while being fake-good: single-use abstractions, tests that assert mocks instead of behavior, defensive checks that can't fire, silently-dropped data, hidden global state. Funny name, serious evidence-based output, no grade. Use when the user wants a skeptical senior-reviewer pass, asks "where is this code pretending to be good / what's actually wrong with this," or runs /the-finder-outer. Best after /orient and /map; reuses /quality hotspots if present. Reads and writes .archeology/snapshot.json.
+description: >-
+  Adversarial code review — find the gap between "passes checks" and "I'd trust this in production."
+  Hunts code that satisfies linters, tests, and type checkers while being fake-good: single-use
+  abstractions, tests that assert mocks instead of behavior, defensive checks that can't fire,
+  silently-dropped data, hidden global state. Funny name, serious evidence-based output, no grade.
+  Use when the user wants a skeptical senior-reviewer pass, asks "where is this code pretending to
+  be good / what's actually wrong with this," or runs /the-finder-outer. Best after /orient and
+  /map; reuses /quality hotspots if present. Reads and writes .archeology/snapshot.json.
 user-invocable: true
 allowed-tools:
   - Read
@@ -176,7 +183,7 @@ Record findings under `snapshot.finder_outer`:
 
 Then append to the aggregated `.archeology/report.md` (create it with the standard header if it doesn't exist):
 
-- Insert or replace your marker-delimited section. Keep section order `orient`, `map`, `quality`, `the-finder-outer`, `story`:
+- Insert or replace your marker-delimited section. Keep section order `orient`, `map`, `api-trace`, `quality`, `the-finder-outer`, `story`:
   ```markdown
   <!-- section:finder-outer -->
   <the same content you printed to the console, verbatim — it already begins with `## The Finder Outer`, so do not add another heading>
