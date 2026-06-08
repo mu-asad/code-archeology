@@ -160,7 +160,7 @@ for skill in "${SELECTED_SKILLS[@]}"; do
     [[ -n "$API_GROUP" ]]    && prompt="$prompt $API_GROUP"
   fi
 
-  if claude -p "$prompt"; then
+  if claude --add-dir "$TARGET" -p "$prompt"; then
     PASSED+=("$skill")
   else
     echo -e "${RED}  /$skill exited with an error — continuing${RESET}" >&2
