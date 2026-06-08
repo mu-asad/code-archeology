@@ -53,6 +53,17 @@ Each skill writes its findings to `.archeology/snapshot.json` when it finishes. 
 >
 > You don't have to run all of them. Run only the skills that answer your current question.
 
+**Want to run them all automatically?** Use the included script — it fires each skill as a separate `claude` process so sessions stay isolated:
+
+```bash
+./scripts/run.sh ../my-repo                        # run all skills
+./scripts/run.sh ../my-repo --skills orient,quality # subset
+./scripts/run.sh ../my-repo --from map              # resume after orient
+./scripts/run.sh ../my-repo --diagram               # api-trace with Mermaid
+```
+
+Run it from inside the code-archeology repo (skills are loaded from here). Requires the [Claude Code CLI](https://claude.ai/code).
+
 **3. Read the report** printed to your conversation, and find the saved artifacts in `.archeology/` (see [What you get](#what-you-get)).
 
 > Not using Claude Code? See [Agent compatibility](#agent-compatibility) — the same skills run as plain prompts in Copilot agent, Cursor, Codex, etc.
