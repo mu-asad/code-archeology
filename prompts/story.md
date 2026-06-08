@@ -22,6 +22,8 @@ Works best on repos with meaningful commit history. On AI-generated repos with s
 
 ---
 
+> **Start this skill in a fresh conversation.** Load the snapshot, do the work, end the session. The snapshot has everything prior skills found — there is no need to carry their context forward. Chaining skills in one conversation bloats context; on large repos it will exhaust it.
+
 ## Step 0 — Load snapshot
 
 Load `.archeology/snapshot.json`. If it doesn't exist, run the `orient` prompt first.

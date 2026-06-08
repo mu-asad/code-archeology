@@ -36,16 +36,22 @@ Claude Code auto-discovers `<target-repo>/.claude/skills/`, so the next time you
 >
 > **Prefer not to copy at all?** Launch from *this* repo and point the skills at the target instead: `cd code-archeology && claude --add-dir <target-repo>`, then `/orient <target-repo>`. The skills load from here and write `.archeology/` into the target.
 
-**2. Run the skills** from inside the target repo, in order:
+**2. Run each skill in its own fresh conversation** — do not chain them in a single session:
 
 ```
-/orient            # start here — always
-/map               # then any of these, in any order
-/api-trace
-/quality
-/the-finder-outer
-/story
+/orient            # session 1 — always start here
+/map               # session 2
+/api-trace         # session 3
+/quality           # session 4
+/the-finder-outer  # session 5
+/story             # session 6
 ```
+
+Each skill writes its findings to `.archeology/snapshot.json` when it finishes. The next skill opens a fresh conversation, loads the snapshot, and picks up from there — no prior context needed.
+
+> **Why separate sessions?** Each skill reads a lot of files. Running them all in one conversation carries every file read from `/orient` through to `/story`, bloating context unnecessarily — and on large repos, exhausting it. The snapshot is the handoff; the conversation is not.
+>
+> You don't have to run all of them. Run only the skills that answer your current question.
 
 **3. Read the report** printed to your conversation, and find the saved artifacts in `.archeology/` (see [What you get](#what-you-get)).
 
