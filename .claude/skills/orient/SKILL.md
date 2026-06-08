@@ -47,6 +47,8 @@ If no path is given, use the current working directory.
 
 ## Step 0 — Initialize or resume snapshot
 
+> **Run each skill in its own fresh conversation.** When this skill finishes, end the session. The next skill (`/map`, `/api-trace`, etc.) opens a fresh conversation and loads the snapshot — it does not need this session's context. Chaining skills in one conversation carries every file read forward and bloats context unnecessarily on large repos.
+
 Before reading any code, check if `.archeology/snapshot.json` already exists in the target repo.
 
 - **If it exists**: load it. Check `meta.skills_run` — if `orient` is already in there, report the existing findings and ask the user if they want to re-run. If resuming an interrupted run, continue from `coverage.queued`.

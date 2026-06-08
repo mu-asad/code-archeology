@@ -21,6 +21,8 @@ This prompt is designed to work on large repos without choking on context. Read 
 
 ---
 
+> **Run each skill in its own fresh conversation.** When this skill finishes, end the session. The next skill opens a fresh conversation and loads the snapshot — it does not need this session's context. Chaining skills in one conversation carries every file read forward and bloats context unnecessarily on large repos.
+
 ## Step 0 — Initialize or resume snapshot
 
 Before reading any code, check if `.archeology/snapshot.json` already exists in the target repo.
