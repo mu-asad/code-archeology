@@ -49,6 +49,8 @@ Before reading any code, check if `.archeology/snapshot.json` already exists in 
 
 Before synthesizing product findings, compute the repo-wide facts that later skills will cite. These values live in `snapshot.meta.stats` and are the **single source of truth** for aggregate counts/dates in every report section. Later skills must not publish independently recomputed totals.
 
+If resuming an existing snapshot from before this field existed, create `snapshot.meta.stats = {}` before computing. Then populate or replace every stat field below in the same step, so downstream skills never inherit a half-upgraded snapshot.
+
 Use explicit definitions:
 
 ```bash

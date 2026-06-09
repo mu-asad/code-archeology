@@ -28,7 +28,7 @@ Load `.archeology/snapshot.json`. If it doesn't exist, run the `orient` prompt f
 
 Check `snapshot.product.summary` and `snapshot.structure` for domain context — a God object is only a problem if the domain doesn't justify it.
 
-When citing repo-wide aggregate facts (commit counts, date span, tracked files, entry point counts), use `snapshot.meta.stats` from `orient`. Do not recompute or publish alternate counts. If `meta.stats` is missing, say so and recommend re-running `orient` rather than guessing.
+When citing repo-wide aggregate facts (commit counts, date span, tracked files, entry point counts), use `snapshot.meta.stats` from `orient`. Before citing a value, confirm the specific needed field is present and non-null. Do not recompute or publish alternate counts. If `meta.stats` is missing, or any needed field is absent/null, treat stats as unavailable and recommend re-running `orient` rather than guessing.
 
 **Write snapshot after every major step.**
 

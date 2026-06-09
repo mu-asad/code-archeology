@@ -37,7 +37,7 @@ Read `snapshot.meta.stats` before running git-history commands. Treat it as the 
 - `tracked_files`
 - `entry_points`
 
-When the story report mentions commit counts, dates, elapsed days, tracked file counts, or entry point counts, cite these values exactly and state the relevant definition (for example, "commits across all refs" vs "commits reachable from HEAD"). Do not publish independently recomputed totals. If `meta.stats` is missing, say it is unavailable and recommend re-running `orient`; do not guess.
+When the story report mentions commit counts, dates, elapsed days, tracked file counts, or entry point counts, cite these values exactly and state the relevant definition (for example, "commits across all refs" vs "commits reachable from HEAD"). Before citing any of the fields above, confirm it is present and non-null. Do not publish independently recomputed totals. If `meta.stats` is missing, or any needed field is absent/null, say canonical stats are unavailable and recommend re-running `orient`; do not guess.
 
 **Write snapshot after every major step.**
 
