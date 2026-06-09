@@ -50,7 +50,7 @@
             },
             "public_surface_items": {
               "type": ["integer", "null"],
-              "description": "Number of route/endpoint/command items recorded in structure.public_surface"
+              "description": "Number of curated route/endpoint/command items recorded in structure.public_surface by orient, capped at 20; not the total public surface size"
             },
             "source_notes": {
               "type": "string",

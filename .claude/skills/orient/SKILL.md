@@ -88,7 +88,7 @@ git ls-files | wc -l            # tracked_files
 
 Then calculate `commit_span_days` as the elapsed calendar days between `first_commit_date` and `last_commit_date` (same-day histories are `0`). Do not phrase this as "built in N days" unless you also state that definition.
 
-Initialize `entry_points` and `public_surface_items` to `0` for now; update them after Steps 2 and 3 when those arrays are populated. If the target is not a git repo or a command cannot run, set the affected field to `null` and explain the caveat in `source_notes`.
+Initialize `entry_points` and `public_surface_items` to `0` for now; update them after Steps 2 and 3 when those arrays are populated. `public_surface_items` means "curated public surface items recorded by orient, capped at 20," not total endpoints/commands in the repo. If the target is not a git repo or a command cannot run, set the affected field to `null` and explain the caveat in `source_notes`.
 
 Write snapshot.
 
@@ -120,6 +120,8 @@ Look for (in priority order):
 - `index.ts`, `server.ts`, `app.ts`, `main.ts` (TypeScript)
 - `index.js`, `server.js`, `app.js` (JavaScript)
 - Script entries in `package.json` `scripts` field (`start`, `dev`, `serve`)
+- Python packaging script entries in `pyproject.toml`: `[project.scripts]`, `[project.gui-scripts]`, and `[tool.poetry.scripts]`
+- `setup.py` / `setup.cfg` console script entry points
 - Procfile, systemd unit files
 - Docker `CMD` / `ENTRYPOINT` directives
 
@@ -142,7 +144,7 @@ Look for:
 
 **Do not read the handlers** — read only the route declarations. The pattern `GET /users/:id` tells you more than the implementation.
 
-List the top 20 most interesting routes/endpoints in `snapshot.structure.public_surface`. Also set `snapshot.meta.stats.public_surface_items` to the exact number of items recorded in `snapshot.structure.public_surface`. Write snapshot.
+List the top 20 most interesting routes/endpoints in `snapshot.structure.public_surface`. Also set `snapshot.meta.stats.public_surface_items` to the exact number of curated items recorded in `snapshot.structure.public_surface` (max 20), not the total public surface size. Write snapshot.
 
 Note: use `public_surface` — not `structure.layers`. The `layers` field is reserved for the map skill's logical architecture objects and has a different shape (`name/paths/responsibility`).
 
@@ -195,7 +197,7 @@ Print a human-readable orientation report. Use this format — a single `## Orie
 [bullet list: language%, framework, key services, notable external deps]
 
 ### Repo stats
-[canonical values from `snapshot.meta.stats`: commits reachable from HEAD, commits across all refs, first/last commit dates, elapsed calendar days, tracked files, entry point count, public-surface count. Use the exact values and definitions; do not recompute.]
+[canonical values from `snapshot.meta.stats`: commits reachable from HEAD, commits across all refs, first/last commit dates, elapsed calendar days, tracked files, entry point count, public surface items recorded (max 20). Use the exact values and definitions; do not recompute.]
 
 ### Domain model (key entities)
 [bullet list of 5-10 core entities with one-line descriptions]
