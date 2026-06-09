@@ -28,20 +28,26 @@ Works best on repos with meaningful commit history. On AI-generated repos with s
 
 Load `.archeology/snapshot.json`. If it doesn't exist, run the `orient` prompt first.
 
+Read `snapshot.meta.stats` before running git-history commands. Treat it as the canonical source for repo-wide totals and dates:
+- `commits_head`
+- `commits_all`
+- `first_commit_date`
+- `last_commit_date`
+- `commit_span_days`
+- `tracked_files`
+- `entry_points`
+
+When the story report mentions commit counts, dates, elapsed days, tracked file counts, or entry point counts, cite these values exactly and state the relevant definition (for example, "commits across all refs" vs "commits reachable from HEAD"). Do not publish independently recomputed totals. If `meta.stats` is missing, say it is unavailable and recommend re-running `orient`; do not guess.
+
 **Write snapshot after every major step.**
 
 ---
 
 ## Step 1 — Read the git record
 
-Run these to understand the history shape:
+Use `snapshot.meta.stats` for the overall timeline. Run these only to understand history shape, contributors, churn, and pivots:
 
 ```bash
-# Overall timeline
-git log --oneline --all | wc -l
-git log --format="%ad" --date=short | tail -1   # first commit date
-git log --format="%ad" --date=short | head -1   # most recent commit date
-
 # Contributor shape
 git shortlog -sn --all | head -10
 
@@ -68,7 +74,7 @@ git log --shortstat --pretty=format:'C %h %s' | awk '
 ```
 
 Identify:
-- **Timeline span**: days, months, years?
+- **Timeline span**: use `snapshot.meta.stats.first_commit_date`, `last_commit_date`, and `commit_span_days`
 - **Contributor count**: solo, small team, large org?
 - **Velocity pattern**: steady, burst-then-quiet, or single dump?
 - **Churn hotspots**: files edited most — core of the product or biggest source of problems?

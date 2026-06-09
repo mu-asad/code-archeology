@@ -51,6 +51,17 @@ If no path is given, use the current working directory.
 
 Load `.archeology/snapshot.json`. If it doesn't exist, run `/orient` first.
 
+Read `snapshot.meta.stats` before running git-history commands. Treat it as the canonical source for repo-wide totals and dates:
+- `commits_head`
+- `commits_all`
+- `first_commit_date`
+- `last_commit_date`
+- `commit_span_days`
+- `tracked_files`
+- `entry_points`
+
+When the story report mentions commit counts, dates, elapsed days, tracked file counts, or entry point counts, cite these values exactly and state the relevant definition (for example, "commits across all refs" vs "commits reachable from HEAD"). Do not publish independently recomputed totals. If `meta.stats` is missing, say it is unavailable and recommend re-running `/orient`; do not guess.
+
 If `story` is already in `meta.skills_run`, report existing findings and ask if the user wants to re-run.
 
 `/story` works without `/map` or `/quality` but benefits from both — domain context makes the narrative richer.
@@ -61,14 +72,9 @@ If `story` is already in `meta.skills_run`, report existing findings and ask if 
 
 ## Step 1 — Read the git record
 
-Run these commands to understand the history shape:
+Use `snapshot.meta.stats` for the overall timeline. Run these commands only to understand history shape, contributors, churn, and pivots:
 
 ```bash
-# Overall timeline
-git log --oneline --all | wc -l              # total commits
-git log --format="%ad" --date=short | tail -1  # first commit
-git log --format="%ad" --date=short | head -1  # most recent commit
-
 # Contributor shape
 git shortlog -sn --all | head -10
 
@@ -95,7 +101,7 @@ git log --shortstat --pretty=format:'C %h %s' | awk '
 ```
 
 From this, identify:
-- **Timeline span**: days, months, years?
+- **Timeline span**: use `snapshot.meta.stats.first_commit_date`, `last_commit_date`, and `commit_span_days`
 - **Contributor count**: solo? small team? large org?
 - **Velocity pattern**: steady, burst-then-quiet, or single big dump?
 - **Churn hotspots**: files edited most — these are either the core of the product or the biggest source of problems

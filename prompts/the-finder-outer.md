@@ -30,6 +30,8 @@ Find the gap between *passes checks* and *I'd trust this in production* — code
 
 Load `.archeology/snapshot.json`. If it doesn't exist, run the `orient` prompt first.
 
+When citing repo-wide aggregate facts (commit counts, date span, tracked files, entry point counts), use `snapshot.meta.stats` from `orient`. Do not recompute or publish alternate counts. If `meta.stats` is missing, say so and recommend re-running `orient` rather than guessing.
+
 Pull in whatever prior analysis exists:
 - `snapshot.quality.structural.complexity_hotspots` — pre-identified large/complex files
 - `snapshot.quality.intentional` — silent failures / fake validation already flagged (confirm or deepen)

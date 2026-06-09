@@ -61,6 +61,8 @@ If no path is given, use the current working directory.
 
 Load `.archeology/snapshot.json`. If it doesn't exist, tell the user to run `/orient` first.
 
+When citing repo-wide aggregate facts (commit counts, date span, tracked files, entry point counts), use `snapshot.meta.stats` from `/orient`. Do not recompute or publish alternate counts. If `meta.stats` is missing, say so and recommend re-running `/orient` rather than guessing.
+
 Pull in whatever prior analysis exists — it makes suspect-selection cheaper and the findings sharper:
 - `snapshot.quality.structural.complexity_hotspots` — pre-identified large/complex files
 - `snapshot.quality.intentional` — silent failures / fake validation already flagged (confirm or deepen them)

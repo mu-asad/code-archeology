@@ -159,6 +159,7 @@ The point: you get a **narrative verdict** a human can act on, not just a pile o
 Each skill reads from and writes to `.archeology/snapshot.json`. This shared artifact is the backbone:
 
 - **No re-reading** — skills consume prior analysis instead of re-scanning the codebase
+- **Single-source facts** — `/orient` records canonical repo stats (`meta.stats`) so later skills cite the same commit counts, dates, tracked-file counts, and entry-point counts instead of recomputing slightly different numbers
 - **Resumable** — if a run is interrupted (large repos can exhaust context), the next run picks up from where it stopped via the snapshot's coverage map
 - **Context-aware** — later skills inherit domain context from earlier ones, so judgments like "this is a bad abstraction" are grounded in what the domain actually needs
 
