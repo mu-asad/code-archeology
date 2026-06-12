@@ -9,9 +9,8 @@ A collection of Claude Code skills for understanding large, unfamiliar codebases
 ## Repository layout
 
 ```
-.claude/skills/<name>/SKILL.md   # the Claude Code skills (orient, map, api-trace, quality, the-finder-outer, story)
+.claude/skills/<name>/SKILL.md   # the skills (orient, map, api-trace, quality, the-finder-outer, story)
 .claude/settings.json            # git-command allowlist bundled with the skills
-prompts/<name>.md                # the same skills as agent-agnostic prompts
 schema/snapshot.schema.json      # the shared .archeology/snapshot.json contract
 ```
 
@@ -66,7 +65,7 @@ Run it from inside the code-archeology repo (skills are loaded from here). Requi
 
 **3. Read the report** printed to your conversation, and find the saved artifacts in `.archeology/` (see [What you get](#what-you-get)).
 
-> Not using Claude Code? See [Agent compatibility](#agent-compatibility) — the same skills run as plain prompts in Copilot agent, Cursor, Codex, etc.
+> Not using Claude Code? See [Agent compatibility](#agent-compatibility) — the same `SKILL.md` files work directly in Copilot agent, Cursor, Codex, etc.
 
 ---
 
@@ -191,16 +190,16 @@ Tuned for the modern polyglot stack:
 
 ## Agent compatibility
 
-The `.claude/skills/` versions are Claude Code-native — auto-discovered and invoked via `/orient` etc.
-
-The `prompts/` directory mirrors the same skills — same steps, same snapshot contract, same output format — repackaged for **any agent with terminal + file access**. (The wording differs slightly: the prompt versions add agent-agnostic framing and drop Claude Code-specific phrasing, so they're parallel rather than byte-for-byte identical.)
+There is **one copy of each skill** — the `SKILL.md` in `.claude/skills/<name>/` — and it works across agents. The body of a `SKILL.md` is plain step-by-step markdown; the YAML frontmatter at the top (`name`, `description`, `allowed-tools`) is metadata that Claude Code and Copilot consume natively, and any other agent can simply ignore.
 
 | Agent | How to use |
 |-------|-----------|
-| Claude Code | `/orient` — auto-invoked from `.claude/skills/` |
+| Claude Code | `/orient` — auto-discovered from `.claude/skills/` |
 | GitHub Copilot coding agent | Reads `.claude/skills/` natively — same `SKILL.md` format (see below) |
-| Cursor | Reference `prompts/orient.md` in your prompt |
-| Any other agent | Paste the prompt content directly |
+| Cursor | Reference the file in your prompt: `@.claude/skills/orient/SKILL.md` + *"run this on [path]"* |
+| Any other agent with terminal + file access | Paste the `SKILL.md` body and specify the target repo path — the frontmatter can stay or go |
+
+Requirements for non-Claude agents: the agent must be able to run terminal commands and read/write files in the target repo. Where a skill says "the user runs `/orient`", read it as "the user asks for the orient analysis" — invocation phrasing is the only Claude-specific part.
 
 The snapshot file is the same regardless of which agent runs the skill, so agents can **hand off between steps** — run `/orient` in one tool, `/quality` in another, against the same `.archeology/snapshot.json`.
 
