@@ -31,7 +31,8 @@
                 "items": { "type": "string" },
                 "description": "Step identifiers fully completed, in order"
               }
-            }
+            },
+            "required": ["current_step", "completed_steps"]
           }
         },
         "stats": {

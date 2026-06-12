@@ -116,17 +116,24 @@ def validate_snapshot(snapshot_path, schema_path):
     if schema is not None:
         try:
             import jsonschema
-            # Pick the validator class from the schema's own $schema declaration
-            # (ours is draft-07); don't assume a draft.
-            validator_cls = jsonschema.validators.validator_for(schema)
-            validator_cls.check_schema(schema)
-            validator = validator_cls(schema)
-            for err in sorted(validator.iter_errors(snapshot), key=str):
-                loc = ".".join(str(p) for p in err.absolute_path) or "(root)"
-                errors.append(f"schema violation at {loc}: {err.message}")
-            schema_validated = True
         except ImportError:
-            pass  # fall through to built-in checks
+            jsonschema = None  # fall through to built-in checks
+        if jsonschema is not None:
+            try:
+                # Pick the validator class from the schema's own $schema
+                # declaration (ours is draft-07); don't assume a draft.
+                validator_cls = jsonschema.validators.validator_for(schema)
+                validator_cls.check_schema(schema)
+                validator = validator_cls(schema)
+                for err in sorted(validator.iter_errors(snapshot), key=str):
+                    loc = ".".join(str(p) for p in err.absolute_path) or "(root)"
+                    errors.append(f"schema violation at {loc}: {err.message}")
+                schema_validated = True
+            except jsonschema.exceptions.SchemaError as e:
+                # The schema itself is broken — report it and fall back to
+                # the built-in checks rather than crashing.
+                errors.append(f"schema file is not a valid JSON Schema: "
+                              f"{e.message}")
 
     if not schema_validated:
         # Built-in fallback: required keys, basic types, enums.
