@@ -89,6 +89,9 @@ def validate_snapshot(snapshot_path, schema_path):
     except (OSError, json.JSONDecodeError) as e:
         return [f"snapshot unreadable or invalid JSON: {e}"]
 
+    if not isinstance(snapshot, dict):
+        return [f"snapshot root must be a JSON object, got {type(snapshot).__name__}"]
+
     schema = None
     if schema_path:
         try:
@@ -99,7 +102,11 @@ def validate_snapshot(snapshot_path, schema_path):
     if schema is not None:
         try:
             import jsonschema
-            validator = jsonschema.Draft202012Validator(schema)
+            # Pick the validator class from the schema's own $schema declaration
+            # (ours is draft-07); don't assume a draft.
+            validator_cls = jsonschema.validators.validator_for(schema)
+            validator_cls.check_schema(schema)
+            validator = validator_cls(schema)
             for err in sorted(validator.iter_errors(snapshot), key=str):
                 loc = ".".join(str(p) for p in err.absolute_path) or "(root)"
                 errors.append(f"schema violation at {loc}: {err.message}")
@@ -146,9 +153,9 @@ def lint_report(report_path):
     opens = re.findall(r"<!-- section:([a-z-]+) -->", text)
     closes = re.findall(r"<!-- /section:([a-z-]+) -->", text)
 
-    for name in opens:
+    for name in sorted(set(opens)):
         if opens.count(name) > 1:
-            errors.append(f"duplicate section marker: {name}")
+            errors.append(f"duplicate section marker: {name} (×{opens.count(name)})")
     for name in set(opens):
         if closes.count(name) != opens.count(name):
             errors.append(f"unbalanced markers for section: {name}")
@@ -240,10 +247,14 @@ def main(argv):
         return self_test()
 
     snapshot_path = report_path = None
-    if argv[0] == "--snapshot":
-        snapshot_path = Path(argv[1])
-    elif argv[0] == "--report":
-        report_path = Path(argv[1])
+    if argv[0] in ("--snapshot", "--report"):
+        if len(argv) < 2:
+            print(f"error: {argv[0]} requires a file path")
+            return 2
+        if argv[0] == "--snapshot":
+            snapshot_path = Path(argv[1])
+        else:
+            report_path = Path(argv[1])
     else:
         target = Path(argv[0])
         arch = target / ".archeology"

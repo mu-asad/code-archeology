@@ -236,7 +236,7 @@ The file uses marker-delimited sections so skills can run in any order and re-ru
 
 Then write the snapshot one final time with `orient` recorded in `meta.skills_run`.
 
-Optionally, if `validate.py` (in the same directory as these skills) is available and you have permission to run `python3`, validate your output: `python3 .claude/skills/validate.py <target-repo>`. Do not add interpreters to any allowlist for this — when in doubt, skip it; the run.sh wrapper performs this check deterministically anyway.
+Optionally, if `.claude/skills/validate.py` is available and you have permission to run `python3`, validate your output: `python3 .claude/skills/validate.py <target-repo>`. Do not add interpreters to any allowlist for this — when in doubt, skip it; the run.sh wrapper performs this check deterministically anyway.
 
 ---
 

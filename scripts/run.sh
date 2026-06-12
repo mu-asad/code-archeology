@@ -150,6 +150,9 @@ VALIDATOR="$SCRIPT_DIR/../.claude/skills/validate.py"
 if [[ ! -f "$VALIDATOR" ]]; then
   VALIDATOR=""
   echo -e "${YELLOW}Warning: validate.py not found — skipping post-skill validation${RESET}" >&2
+elif ! command -v python3 &>/dev/null; then
+  VALIDATOR=""
+  echo -e "${YELLOW}Warning: python3 not found — skipping post-skill validation${RESET}" >&2
 fi
 
 # ── run each skill ─────────────────────────────────────────────────────────────
@@ -179,9 +182,15 @@ for skill in "${SELECTED_SKILLS[@]}"; do
   # Deterministic check: validate what the skill just wrote. This runs outside
   # the agent's permission system — no model discretion involved.
   if [[ -n "$VALIDATOR" && -d "$TARGET/.archeology" ]]; then
-    if ! python3 "$VALIDATOR" "$TARGET"; then
+    set +e
+    python3 "$VALIDATOR" "$TARGET"
+    vstatus=$?
+    set -e
+    if [[ $vstatus -eq 1 ]]; then
       echo -e "${RED}  /$skill left invalid artifacts (see above)${RESET}" >&2
       INVALID+=("$skill")
+    elif [[ $vstatus -gt 1 ]]; then
+      echo -e "${YELLOW}  validator could not run (exit $vstatus) — not counting as invalid${RESET}" >&2
     fi
   fi
 
