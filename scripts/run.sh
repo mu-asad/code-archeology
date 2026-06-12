@@ -144,9 +144,21 @@ echo -e "${DIM}Target:${RESET} $TARGET"
 echo -e "${DIM}Skills:${RESET} ${SELECTED_SKILLS[*]}"
 echo ""
 
+# ── locate the validator (rides with the skills) ──────────────────────────────
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+VALIDATOR="$SCRIPT_DIR/../.claude/skills/validate.py"
+if [[ ! -f "$VALIDATOR" ]]; then
+  VALIDATOR=""
+  echo -e "${YELLOW}Warning: validate.py not found — skipping post-skill validation${RESET}" >&2
+elif ! command -v python3 &>/dev/null; then
+  VALIDATOR=""
+  echo -e "${YELLOW}Warning: python3 not found — skipping post-skill validation${RESET}" >&2
+fi
+
 # ── run each skill ─────────────────────────────────────────────────────────────
 PASSED=()
 FAILED=()
+INVALID=()
 
 for skill in "${SELECTED_SKILLS[@]}"; do
   echo -e "${BOLD}━━━ /$skill ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
@@ -167,6 +179,21 @@ for skill in "${SELECTED_SKILLS[@]}"; do
     FAILED+=("$skill")
   fi
 
+  # Deterministic check: validate what the skill just wrote. This runs outside
+  # the agent's permission system — no model discretion involved.
+  if [[ -n "$VALIDATOR" && -d "$TARGET/.archeology" ]]; then
+    set +e
+    python3 "$VALIDATOR" "$TARGET"
+    vstatus=$?
+    set -e
+    if [[ $vstatus -eq 1 ]]; then
+      echo -e "${RED}  /$skill left invalid artifacts (see above)${RESET}" >&2
+      INVALID+=("$skill")
+    elif [[ $vstatus -gt 1 ]]; then
+      echo -e "${YELLOW}  validator could not run (exit $vstatus) — not counting as invalid${RESET}" >&2
+    fi
+  fi
+
   echo ""
 done
 
@@ -180,6 +207,9 @@ fi
 if [[ ${#FAILED[@]} -gt 0 ]]; then
   echo -e "${RED}✗ Failed:${RESET} ${FAILED[*]}"
 fi
+if [[ ${#INVALID[@]} -gt 0 ]]; then
+  echo -e "${RED}✗ Invalid artifacts after:${RESET} ${INVALID[*]}"
+fi
 
 REPORT="$TARGET/.archeology/report.md"
 if [[ -f "$REPORT" ]]; then
@@ -188,4 +218,4 @@ if [[ -f "$REPORT" ]]; then
 fi
 
 echo ""
-[[ ${#FAILED[@]} -gt 0 ]] && exit 1 || exit 0
+[[ ${#FAILED[@]} -gt 0 || ${#INVALID[@]} -gt 0 ]] && exit 1 || exit 0

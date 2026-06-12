@@ -197,6 +197,8 @@ Then append to the aggregated `.archeology/report.md` (create it with the standa
 
 Then write the snapshot one final time with `the-finder-outer` added to `meta.skills_run`.
 
+Optionally, if `.claude/skills/validate.py` is available and you have permission to run `python3`, validate your output: `python3 .claude/skills/validate.py <target-repo>`. Do not add interpreters to any allowlist for this — when in doubt, skip it; the run.sh wrapper performs this check deterministically anyway.
+
 ---
 
 ## Context budget rules
