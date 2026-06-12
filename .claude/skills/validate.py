@@ -175,10 +175,13 @@ def validate_snapshot(snapshot_path, schema_path):
                     f"{type(skill).__name__}: {skill!r}")
                 continue
             for dotted in SKILL_COMPLETENESS.get(skill, []):
-                if not get_path(snapshot, dotted):
+                values = [v for _, v in get_path(snapshot, dotted)]
+                # Explicit null counts as incomplete — the field must be
+                # actually written, not just present as a placeholder.
+                if not values or all(v is None for v in values):
                     errors.append(
                         f"incomplete: '{skill}' is in meta.skills_run but "
-                        f"{dotted} is missing")
+                        f"{dotted} is missing or null")
 
     return errors
 
@@ -239,14 +242,16 @@ def self_test():
             {"path": "a.py", "smell": "x", "evidence": "y",
              "confidence": "definitely"}]},
     }
-    # Schema-valid but claims a skill ran without writing its output —
-    # must be caught by the conditional completeness check in BOTH modes.
+    # Claims a skill ran without writing its output — one field explicitly
+    # null (a placeholder is not a value), one missing entirely. Must be
+    # caught by the conditional completeness check in BOTH modes.
     incomplete_snapshot = {
         "meta": {"repo": "/tmp/x", "created_at": "now", "updated_at": "now",
                  "skills_run": ["quality"]},
         "coverage": {"analyzed": [], "queued": [], "skipped": []},
         "stack": {},
         "product": {},
+        "quality": {"overall_grade": None},
     }
     good_report = (
         "# Report\n\n<!-- section:orient -->\n## Orientation\n<!-- /section:orient -->\n"
@@ -271,10 +276,15 @@ def self_test():
         if not validate_snapshot(td / "bad.json", schema_path):
             failures.append("invalid snapshot was accepted")
         incomplete_errs = validate_snapshot(td / "incomplete.json", schema_path)
-        if not any("incomplete" in e for e in incomplete_errs):
+        if not any("incomplete" in e and "overall_grade" in e
+                   for e in incomplete_errs):
             failures.append(
-                "snapshot claiming 'quality' ran without quality output "
-                "was not flagged incomplete")
+                "explicitly-null quality.overall_grade was not flagged "
+                "incomplete")
+        if not any("incomplete" in e and "grade_rationale" in e
+                   for e in incomplete_errs):
+            failures.append(
+                "missing quality.grade_rationale was not flagged incomplete")
         if lint_report(td / "good.md"):
             failures.append("valid report was rejected: "
                             + str(lint_report(td / "good.md")))
