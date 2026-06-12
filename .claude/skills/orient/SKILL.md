@@ -66,7 +66,7 @@ Before reading any code, check if `.archeology/snapshot.json` already exists in 
 
   `stack` and `product` have no required sub-fields, so empty objects are valid until you fill them in later steps.
 
-**Write the snapshot to disk after every major step below.** Do not wait until the end. If the agent runs out of context mid-run, the next invocation can resume from where it left off.
+**Write the snapshot to disk after every major step below.** As you go, track step-level progress in `meta.progress.orient`: set `current_step` when a step begins, append it to `completed_steps` when it finishes. On a fresh invocation, if `meta.progress.orient` exists with `current_step` ≠ `"done"`, resume from the first step not in `completed_steps` instead of restarting. Do not wait until the end. If the agent runs out of context mid-run, the next invocation can resume from where it left off.
 
 ---
 
@@ -234,7 +234,7 @@ The file uses marker-delimited sections so skills can run in any order and re-ru
   ```
 - **Update** the `last updated` timestamp in the header on every write.
 
-Then write the snapshot one final time with `orient` recorded in `meta.skills_run`.
+Then write the snapshot one final time with `orient` recorded in `meta.skills_run` and `meta.progress.orient.current_step` set to `"done"`.
 
 Optionally, if `.claude/skills/validate.py` is available and you have permission to run `python3`, validate your output: `python3 .claude/skills/validate.py <target-repo>`. Do not add interpreters to any allowlist for this — when in doubt, skip it; the run.sh wrapper performs this check deterministically anyway.
 

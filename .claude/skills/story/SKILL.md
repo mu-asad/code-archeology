@@ -66,7 +66,7 @@ If `story` is already in `meta.skills_run`, report existing findings and ask if 
 
 `/story` works without `/map` or `/quality` but benefits from both — domain context makes the narrative richer.
 
-**Write snapshot after every major step.**
+**Write snapshot after every major step.** As you go, track step-level progress in `meta.progress.story`: set `current_step` when a step begins, append it to `completed_steps` when it finishes. On a fresh invocation, if `meta.progress.story` exists with `current_step` ≠ `"done"`, resume from the first step not in `completed_steps` instead of restarting.
 
 ---
 
@@ -243,7 +243,7 @@ Besides printing to the console, write the **same** content into the shared `.ar
 - The standalone `.archeology/story.md` still gets written as before; this embeds the same narrative inline so the aggregated report is self-contained.
 - Update the `last updated` timestamp in the header.
 
-Then write the snapshot one final time with `story` added to `meta.skills_run`.
+Then write the snapshot one final time with `story` added to `meta.skills_run` and `meta.progress.story.current_step` set to `"done"`.
 
 Optionally, if `.claude/skills/validate.py` is available and you have permission to run `python3`, validate your output: `python3 .claude/skills/validate.py <target-repo>`. Do not add interpreters to any allowlist for this — when in doubt, skip it; the run.sh wrapper performs this check deterministically anyway.
 

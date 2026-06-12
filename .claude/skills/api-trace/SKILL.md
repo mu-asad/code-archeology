@@ -65,7 +65,7 @@ Pull in prior analysis:
 
 If `api-trace` is already in `meta.skills_run`, report the existing findings and ask if the user wants to re-run.
 
-**Write snapshot after every major step.**
+**Write snapshot after every major step.** As you go, track step-level progress in `meta.progress.api-trace`: set `current_step` when a step begins, append it to `completed_steps` when it finishes. On a fresh invocation, if `meta.progress.api-trace` exists with `current_step` ≠ `"done"`, resume from the first step not in `completed_steps` instead of restarting.
 
 ---
 
@@ -306,7 +306,7 @@ Then append to `.archeology/report.md` (create with standard header if absent):
   ```
 - Update the `last updated` timestamp in the header.
 
-Then write the snapshot one final time with `api-trace` added to `meta.skills_run`.
+Then write the snapshot one final time with `api-trace` added to `meta.skills_run` and `meta.progress.api-trace.current_step` set to `"done"`.
 
 Optionally, if `.claude/skills/validate.py` is available and you have permission to run `python3`, validate your output: `python3 .claude/skills/validate.py <target-repo>`. Do not add interpreters to any allowlist for this — when in doubt, skip it; the run.sh wrapper performs this check deterministically anyway.
 
