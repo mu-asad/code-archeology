@@ -162,6 +162,11 @@ def validate_snapshot(snapshot_path, schema_path):
     skills_run = meta.get("skills_run", []) if isinstance(meta, dict) else []
     if isinstance(skills_run, list):
         for skill in skills_run:
+            if not isinstance(skill, str):
+                errors.append(
+                    f"meta.skills_run entries must be strings, got "
+                    f"{type(skill).__name__}: {skill!r}")
+                continue
             for dotted in SKILL_COMPLETENESS.get(skill, []):
                 if not get_path(snapshot, dotted):
                     errors.append(
