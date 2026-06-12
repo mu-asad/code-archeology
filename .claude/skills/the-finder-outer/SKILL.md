@@ -71,7 +71,7 @@ Pull in whatever prior analysis exists — it makes suspect-selection cheaper an
 
 If `the-finder-outer` is already in `meta.skills_run`, report the existing findings and ask if the user wants to re-run.
 
-**Write the snapshot after every major step.**
+**Write the snapshot after every major step.** As you go, track step-level progress in `meta.progress.the-finder-outer`: set `current_step` when a step begins, append it to `completed_steps` when it finishes. On a fresh invocation, if `meta.progress.the-finder-outer` exists with `current_step` ≠ `"done"`, resume from the first step not in `completed_steps` instead of restarting.
 
 ---
 
@@ -195,7 +195,7 @@ Then append to the aggregated `.archeology/report.md` (create it with the standa
   ```
 - Update the `last updated` timestamp in the header.
 
-Then write the snapshot one final time with `the-finder-outer` added to `meta.skills_run`.
+Then write the snapshot one final time with `the-finder-outer` added to `meta.skills_run` and `meta.progress.the-finder-outer.current_step` set to `"done"`.
 
 Optionally, if `.claude/skills/validate.py` is available and you have permission to run `python3`, validate your output: `python3 .claude/skills/validate.py <target-repo>`. Do not add interpreters to any allowlist for this — when in doubt, skip it; the run.sh wrapper performs this check deterministically anyway.
 

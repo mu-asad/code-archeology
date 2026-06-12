@@ -16,6 +16,25 @@
           "items": { "type": "string" },
           "description": "Skills that have written to this snapshot, in order"
         },
+        "progress": {
+          "type": "object",
+          "description": "Per-skill step-level progress for mid-run resume. Keyed by skill name; written after each step so an interrupted run can resume at the exact step instead of restarting.",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "current_step": {
+                "type": ["string", "null"],
+                "description": "Step identifier currently in progress (e.g. 'step-3'), or 'done' once the skill finished"
+              },
+              "completed_steps": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Step identifiers fully completed, in order"
+              }
+            },
+            "required": ["current_step", "completed_steps"]
+          }
+        },
         "stats": {
           "type": "object",
           "description": "Canonical repo-wide facts computed once by orient. Later skills should cite these values instead of recomputing aggregate counts or dates.",
