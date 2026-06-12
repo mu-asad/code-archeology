@@ -85,8 +85,8 @@ def get_path(obj, dotted):
 def validate_snapshot(snapshot_path, schema_path):
     errors = []
     try:
-        snapshot = json.loads(Path(snapshot_path).read_text())
-    except (OSError, json.JSONDecodeError) as e:
+        snapshot = json.loads(Path(snapshot_path).read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as e:
         return [f"snapshot unreadable or invalid JSON: {e}"]
 
     if not isinstance(snapshot, dict):
@@ -95,8 +95,8 @@ def validate_snapshot(snapshot_path, schema_path):
     schema = None
     if schema_path:
         try:
-            schema = json.loads(Path(schema_path).read_text())
-        except (OSError, json.JSONDecodeError) as e:
+            schema = json.loads(Path(schema_path).read_text(encoding="utf-8"))
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as e:
             errors.append(f"schema unreadable or invalid JSON: {e}")
 
     if schema is not None:
@@ -146,8 +146,8 @@ def validate_snapshot(snapshot_path, schema_path):
 def lint_report(report_path):
     errors = []
     try:
-        text = Path(report_path).read_text()
-    except OSError as e:
+        text = Path(report_path).read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError) as e:
         return [f"report unreadable: {e}"]
 
     opens = re.findall(r"<!-- section:([a-z-]+) -->", text)
@@ -206,10 +206,10 @@ def self_test():
 
     with tempfile.TemporaryDirectory() as td:
         td = Path(td)
-        (td / "good.json").write_text(json.dumps(good_snapshot))
-        (td / "bad.json").write_text(json.dumps(bad_snapshot))
-        (td / "good.md").write_text(good_report)
-        (td / "bad.md").write_text(bad_report)
+        (td / "good.json").write_text(json.dumps(good_snapshot), encoding="utf-8")
+        (td / "bad.json").write_text(json.dumps(bad_snapshot), encoding="utf-8")
+        (td / "good.md").write_text(good_report, encoding="utf-8")
+        (td / "bad.md").write_text(bad_report, encoding="utf-8")
 
         if validate_snapshot(td / "good.json", schema_path):
             failures.append("valid snapshot was rejected: "
