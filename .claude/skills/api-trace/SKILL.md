@@ -93,16 +93,8 @@ Identify every file that acts as an external-facing entry point. This is the bou
 Start with what `/orient` already found in `snapshot.structure.public_surface`. Then verify and extend:
 
 ```bash
-# Find route/controller files
-find . -type f \( -name "*.ts" -o -name "*.js" -o -name "*.py" \) \
-  -not -path "*/node_modules/*" -not -path "*/.venv/*" \
-  -not -path "*/dist/*" -not -path "*/build/*" | \
-  xargs grep -lE "\.get\(|\.post\(|\.put\(|\.delete\(|@router\.|@app\.route|@api_view" 2>/dev/null | head -30
-```
-
-Wait — `xargs` is blocked in this allowlist. Use instead:
-
-```bash
+# Find route/controller files (git ls-files respects .gitignore; no xargs —
+# it's deliberately not in the allowlist)
 git ls-files '*.ts' '*.js' '*.py' | while IFS= read -r f; do
   grep -qE "\.get\(|\.post\(|\.put\(|\.delete\(|@router\.|@app\.route|@api_view" "$f" 2>/dev/null && echo "$f"
 done | head -30
