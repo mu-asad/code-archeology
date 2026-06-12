@@ -15,6 +15,48 @@
           "type": "array",
           "items": { "type": "string" },
           "description": "Skills that have written to this snapshot, in order"
+        },
+        "stats": {
+          "type": "object",
+          "description": "Canonical repo-wide facts computed once by orient. Later skills should cite these values instead of recomputing aggregate counts or dates.",
+          "properties": {
+            "commits_head": {
+              "type": ["integer", "null"],
+              "description": "Commit count reachable from HEAD (`git rev-list --count HEAD`)"
+            },
+            "commits_all": {
+              "type": ["integer", "null"],
+              "description": "Commit count across all refs (`git rev-list --count --all`)"
+            },
+            "first_commit_date": {
+              "type": ["string", "null"],
+              "description": "Earliest commit date across all refs, YYYY-MM-DD"
+            },
+            "last_commit_date": {
+              "type": ["string", "null"],
+              "description": "Most recent commit date across all refs, YYYY-MM-DD"
+            },
+            "commit_span_days": {
+              "type": ["integer", "null"],
+              "description": "Elapsed calendar days between first_commit_date and last_commit_date; same-day histories are 0"
+            },
+            "tracked_files": {
+              "type": ["integer", "null"],
+              "description": "Number of tracked files from `git ls-files | wc -l`"
+            },
+            "entry_points": {
+              "type": ["integer", "null"],
+              "description": "Number of concrete runtime entry points recorded in structure.entry_points, not a fuzzy count of logical capabilities"
+            },
+            "public_surface_items": {
+              "type": ["integer", "null"],
+              "description": "Number of curated route/endpoint/command items recorded in structure.public_surface by orient, capped at 20; not the total public surface size"
+            },
+            "source_notes": {
+              "type": "string",
+              "description": "Any caveats about how stats were computed, e.g. non-git repo or dynamic entrypoint discovery"
+            }
+          }
         }
       },
       "required": ["repo", "created_at", "updated_at", "skills_run"]

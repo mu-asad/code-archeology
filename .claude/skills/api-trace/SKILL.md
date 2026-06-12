@@ -55,6 +55,8 @@ If no path is given, use the current working directory.
 
 Load `.archeology/snapshot.json`. If it doesn't exist, tell the user to run `/orient` first.
 
+When citing repo-wide aggregate facts (commit counts, date span, tracked files, entry point counts), use `snapshot.meta.stats` from `/orient`. Before citing a value, confirm the specific needed field is present and non-null. Do not recompute or publish alternate counts. If `meta.stats` is missing, or any needed field is absent/null, treat stats as unavailable and recommend re-running `/orient` rather than guessing.
+
 Pull in prior analysis:
 - `snapshot.structure.public_surface` — `/orient`'s discovered routes/endpoints (use as seed list)
 - `snapshot.structure.layers` — `/map`'s logical layers (avoids re-deriving the architecture)
@@ -91,16 +93,8 @@ Identify every file that acts as an external-facing entry point. This is the bou
 Start with what `/orient` already found in `snapshot.structure.public_surface`. Then verify and extend:
 
 ```bash
-# Find route/controller files
-find . -type f \( -name "*.ts" -o -name "*.js" -o -name "*.py" \) \
-  -not -path "*/node_modules/*" -not -path "*/.venv/*" \
-  -not -path "*/dist/*" -not -path "*/build/*" | \
-  xargs grep -lE "\.get\(|\.post\(|\.put\(|\.delete\(|@router\.|@app\.route|@api_view" 2>/dev/null | head -30
-```
-
-Wait — `xargs` is blocked in this allowlist. Use instead:
-
-```bash
+# Find route/controller files (git ls-files respects .gitignore; no xargs —
+# it's deliberately not in the allowlist)
 git ls-files '*.ts' '*.js' '*.py' | while IFS= read -r f; do
   grep -qE "\.get\(|\.post\(|\.put\(|\.delete\(|@router\.|@app\.route|@api_view" "$f" 2>/dev/null && echo "$f"
 done | head -30

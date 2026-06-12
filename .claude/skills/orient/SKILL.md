@@ -20,6 +20,7 @@ allowed-tools:
   - Bash(git diff *)
   - Bash(git show *)
   - Bash(git for-each-ref *)
+  - Bash(git ls-files *)
   - Bash(git shortlog *)
   - Bash(git rev-list *)
   - Bash(git status *)
@@ -56,7 +57,7 @@ Before reading any code, check if `.archeology/snapshot.json` already exists in 
 
   ```json
   {
-    "meta": { "repo": "<abs-path>", "created_at": "<now>", "updated_at": "<now>", "skills_run": [] },
+    "meta": { "repo": "<abs-path>", "created_at": "<now>", "updated_at": "<now>", "skills_run": [], "stats": {} },
     "coverage": { "analyzed": [], "queued": [], "skipped": [] },
     "stack": {},
     "product": {}
@@ -66,6 +67,30 @@ Before reading any code, check if `.archeology/snapshot.json` already exists in 
   `stack` and `product` have no required sub-fields, so empty objects are valid until you fill them in later steps.
 
 **Write the snapshot to disk after every major step below.** Do not wait until the end. If the agent runs out of context mid-run, the next invocation can resume from where it left off.
+
+---
+
+## Step 0a — Canonical repo stats
+
+Before synthesizing product findings, compute the repo-wide facts that later skills will cite. These values live in `snapshot.meta.stats` and are the **single source of truth** for aggregate counts/dates in every report section. Later skills must not publish independently recomputed totals.
+
+If resuming an existing snapshot from before this field existed, create `snapshot.meta.stats = {}` before computing. Then populate or replace every stat field below in the same step, so downstream skills never inherit a half-upgraded snapshot.
+
+Use explicit definitions:
+
+```bash
+git rev-list --count HEAD        # commits_head: commits reachable from HEAD
+git rev-list --count --all       # commits_all: commits across all refs
+git log --all --reverse --format="%ad" --date=short | head -1  # first_commit_date
+git log --all --format="%ad" --date=short | head -1            # last_commit_date
+git ls-files | wc -l            # tracked_files
+```
+
+Then calculate `commit_span_days` as the elapsed calendar days between `first_commit_date` and `last_commit_date` (same-day histories are `0`). Do not phrase this as "built in N days" unless you also state that definition.
+
+Initialize `entry_points` and `public_surface_items` to `null` — the "not computed yet" sentinel — then set them to the exact counts after Steps 2 and 3 when those arrays are populated (a legitimate count of `0` is fine *after* discovery has run). Never pre-fill them with `0`: downstream skills treat non-null as citable, and a placeholder `0` from an interrupted run would be published as a confident "0 entry points" fact. `public_surface_items` means "curated public surface items recorded by orient, capped at 20," not total endpoints/commands in the repo. If the target is not a git repo or a command cannot run, set the affected field to `null` and explain the caveat in `source_notes`.
+
+Write snapshot.
 
 ---
 
@@ -95,12 +120,14 @@ Look for (in priority order):
 - `index.ts`, `server.ts`, `app.ts`, `main.ts` (TypeScript)
 - `index.js`, `server.js`, `app.js` (JavaScript)
 - Script entries in `package.json` `scripts` field (`start`, `dev`, `serve`)
+- Python packaging script entries in `pyproject.toml`: `[project.scripts]`, `[project.gui-scripts]`, and `[tool.poetry.scripts]`
+- `setup.py` / `setup.cfg` console script entry points
 - Procfile, systemd unit files
 - Docker `CMD` / `ENTRYPOINT` directives
 
 For each entry point found: read the first 60–100 lines only. You want to know the type (HTTP server? CLI? worker? cron?) and the top-level wiring — not the full implementation.
 
-Record each in `snapshot.structure.entry_points`. Write snapshot.
+Record each in `snapshot.structure.entry_points`. Also set `snapshot.meta.stats.entry_points` to the exact number of concrete entries recorded in `snapshot.structure.entry_points`. Count actual runtime/script/handler entries, not a fuzzy count of logical capabilities. Write snapshot.
 
 ---
 
@@ -117,7 +144,7 @@ Look for:
 
 **Do not read the handlers** — read only the route declarations. The pattern `GET /users/:id` tells you more than the implementation.
 
-List the top 20 most interesting routes/endpoints in `snapshot.structure.public_surface`. Write snapshot.
+List the top 20 most interesting routes/endpoints in `snapshot.structure.public_surface`. Also set `snapshot.meta.stats.public_surface_items` to the exact number of curated items recorded in `snapshot.structure.public_surface` (max 20), not the total public surface size. Write snapshot.
 
 Note: use `public_surface` — not `structure.layers`. The `layers` field is reserved for the map skill's logical architecture objects and has a different shape (`name/paths/responsibility`).
 
@@ -168,6 +195,9 @@ Print a human-readable orientation report. Use this format — a single `## Orie
 
 ### Stack at a glance
 [bullet list: language%, framework, key services, notable external deps]
+
+### Repo stats
+[canonical values from `snapshot.meta.stats`: commits reachable from HEAD, commits across all refs, first/last commit dates, elapsed calendar days, tracked files, entry point count, public surface items recorded (max 20). Use the exact values and definitions; do not recompute.]
 
 ### Domain model (key entities)
 [bullet list of 5-10 core entities with one-line descriptions]

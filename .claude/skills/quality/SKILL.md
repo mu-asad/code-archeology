@@ -54,6 +54,8 @@ Load `.archeology/snapshot.json`. If it doesn't exist, tell the user to run `/or
 
 Check `snapshot.product.summary` and `snapshot.structure` — you need these for context throughout this skill. A God object is only a problem if the domain doesn't justify it.
 
+When citing repo-wide aggregate facts (commit counts, date span, tracked files, entry point counts), use `snapshot.meta.stats` from `/orient`. Before citing a value, confirm the specific needed field is present and non-null. Do not recompute or publish alternate counts. If `meta.stats` is missing, or any needed field is absent/null, treat stats as unavailable and recommend re-running `/orient` rather than guessing.
+
 If `quality` is already in `meta.skills_run`, report existing findings and ask if the user wants to re-run.
 
 **Write snapshot after every major step.**
