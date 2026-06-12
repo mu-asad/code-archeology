@@ -79,7 +79,7 @@ git ls-files '*.ts' '*.tsx' '*.py' \
 
 For the top 5 largest files: read the first 80 lines and skim the structure. Are they large because the domain demands it, or because no one bothered to decompose them?
 
-Record in `snapshot.quality.structural.complexity_hotspots` with a reason for each.
+Record in `snapshot.quality.structural.complexity_hotspots` with a reason for each, **in descending line-count order** — the first entry is always the largest file. The Step 4 grade rules (C2) reference "the first entry," so this order is part of the contract, not a style choice.
 
 ### 1b. Test coverage assessment
 
@@ -227,15 +227,15 @@ Start at **A** and apply every rule whose condition is met by your *recorded* fi
 
 | Rule | Condition (must be backed by a recorded finding) | Cap |
 |------|--------------------------------------------------|-----|
-| **F1** | Two or more D-rules triggered simultaneously | F |
-| **D1** | Fake validation (`intentional.fake_validation`) on a security-, payment-, or data-integrity-critical path | D |
+| **F1** | Two or more **distinct underlying findings** each independently trigger a D-rule. One finding that happens to match several D-rule descriptions counts once. | F |
+| **D1** | Fake *input/data* validation (`intentional.fake_validation`) on a payment- or data-integrity-critical path — auth gaps belong to D2, not here | D |
 | **D2** | Auth present but not enforced on sensitive routes (`intentional.fake_validation`) | D |
 | **D3** | Swallowed errors (`intentional.silent_failures`) on a payment-, security-, or data-loss path | D |
 | **C1** | Silent failure patterns confirmed in ≥3 distinct production paths (`intentional.silent_failures`) | C |
-| **C2** | The riskiest complexity hotspot (top of `structural.complexity_hotspots`) has no test coverage (`structural.test_coverage_assessment`) | C |
-| **C3** | No test suite at all in a codebase meant for production use | C |
+| **C2** | The **first entry** of `structural.complexity_hotspots` (largest by line count — see Step 1a recording order) has no test coverage (`structural.test_coverage_assessment`) | C |
+| **C3** | `structural.test_coverage_assessment` records that no test suite exists, in a codebase meant for production use | C |
 | **B1** | Tests exist but cover only happy paths (`structural.test_coverage_assessment`) | B |
-| **B2** | Widespread dead code or duplication (`structural.dead_code_indicators` / `duplication_areas` — "widespread" = pattern recorded in 3+ areas) | B |
+| **B2** | Widespread dead code or duplication (`structural.dead_code_indicators` / `structural.duplication_areas` — "widespread" = pattern recorded in 3+ areas) | B |
 
 - **No rule triggered → A.**
 - The rubric below describes what the letters *mean*, for the reader — it is not an alternative path to a grade:
