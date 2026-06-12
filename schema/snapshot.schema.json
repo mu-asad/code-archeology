@@ -248,7 +248,11 @@
         "overall_grade": {
           "type": "string",
           "enum": ["A", "B", "C", "D", "F"],
-          "description": "Holistic craft grade, not just correctness"
+          "description": "Craft grade derived from recorded findings via the Step 4 cap rules — not a holistic re-judgment"
+        },
+        "grade_rationale": {
+          "type": "string",
+          "description": "The binding cap rule and its one-line evidence, e.g. 'capped at C by C2: transcribe.py (riskiest hotspot) has no test file'. 'A — no cap rule triggered' when nothing applies."
         },
         "structural": {
           "type": "object",
