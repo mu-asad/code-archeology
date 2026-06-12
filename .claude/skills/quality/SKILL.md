@@ -79,7 +79,7 @@ git ls-files '*.ts' '*.tsx' '*.py' \
 
 For the top 5 largest files: read the first 80 lines and skim the structure. Are they large because the domain demands it, or because no one bothered to decompose them?
 
-Record in `snapshot.quality.structural.complexity_hotspots` with a reason for each.
+Record in `snapshot.quality.structural.complexity_hotspots` with a reason for each, **in descending line-count order** — the first entry is always the largest file. The Step 4 grade rules (C2) reference "the first entry," so this order is part of the contract, not a style choice.
 
 ### 1b. Test coverage assessment
 
@@ -219,9 +219,26 @@ Record in `snapshot.quality.craft.narrative`.
 
 ---
 
-## Step 4 — Overall grade
+## Step 4 — Overall grade (derived, not judged)
 
-Assign a grade using this rubric:
+**The grade is computed from the findings you recorded in Steps 1–2 — it is not a holistic re-judgment.** Two runs (or two different agents) that record the same findings must produce the same letter. If you feel the grade should be different, that feeling means a finding is missing: go record it, then re-derive.
+
+Start at **A** and apply every rule whose condition is met by your *recorded* findings. The grade is the **lowest cap triggered**. Do not go below the lowest triggered cap, and do not stay above it.
+
+| Rule | Condition (must be backed by a recorded finding) | Cap |
+|------|--------------------------------------------------|-----|
+| **F1** | Two or more **distinct underlying findings** each independently trigger a D-rule. One finding that happens to match several D-rule descriptions counts once. | F |
+| **D1** | Fake *input/data* validation (`intentional.fake_validation`) on a payment- or data-integrity-critical path — auth gaps belong to D2, not here | D |
+| **D2** | Auth present but not enforced on sensitive routes (`intentional.fake_validation`) | D |
+| **D3** | Swallowed errors (`intentional.silent_failures`) on a payment-, security-, or data-loss path | D |
+| **C1** | Silent failure patterns confirmed in ≥3 distinct production paths (`intentional.silent_failures`) | C |
+| **C2** | The **first entry** of `structural.complexity_hotspots` (largest by line count — see Step 1a recording order) has no test coverage (`structural.test_coverage_assessment`) | C |
+| **C3** | `structural.test_coverage_assessment` records that no test suite exists, in a codebase meant for production use | C |
+| **B1** | Tests exist but cover only happy paths (`structural.test_coverage_assessment`) | B |
+| **B2** | Widespread dead code or duplication (`structural.dead_code_indicators` / `structural.duplication_areas` — "widespread" = pattern recorded in 3+ areas) | B |
+
+- **No rule triggered → A.**
+- The rubric below describes what the letters *mean*, for the reader — it is not an alternative path to a grade:
 
 | Grade | Meaning |
 |-------|---------|
@@ -231,7 +248,7 @@ Assign a grade using this rubric:
 | D | Functional in the happy path, brittle everywhere else. Significant rework needed. |
 | F | The tests pass but don't trust it. Fundamental quality problems throughout. |
 
-Set `snapshot.quality.overall_grade`. Write snapshot.
+Set `snapshot.quality.overall_grade` **and** `snapshot.quality.grade_rationale` — the rationale names the binding rule and the one-line evidence, e.g. `"capped at C by C2: transcribe.py (1,204 lines, riskiest hotspot) has no test file"`. If no rule triggered, write `"A — no cap rule triggered"`. Write snapshot.
 
 ---
 
@@ -241,6 +258,8 @@ Print the quality report in this format:
 
 ```
 ## Quality Assessment: [overall_grade]
+
+_[grade_rationale — the binding rule and its evidence, verbatim from the snapshot]_
 
 ### The verdict
 [craft narrative — your human prose assessment]
@@ -305,6 +324,7 @@ Optionally, if `.claude/skills/validate.py` is available and you have permission
 ## Failure modes to avoid
 
 - **Score inflation**: Be honest. "Working shit is still shit." A C is not an insult — it's useful information.
+- **Grade by feel**: The letter comes from the Step 4 rules, never from overall impression. If the derived grade feels wrong, the findings are incomplete — fix the findings, not the letter.
 - **Nitpick spiral**: Don't spend 10 paragraphs on naming conventions. The grade should reflect what would actually matter in production.
-- **Missing the forest**: If the whole validation layer is fake, that's an F-level finding. Don't bury it in a list of minor issues.
+- **Missing the forest**: If the whole validation layer is fake, that's a D/F-level finding (rules D1/F1). Don't bury it in a list of minor issues.
 - **Punishing AI generation**: AI-generated code can be good code. Flag AI patterns as signals to verify, not automatic demerits.
