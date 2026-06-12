@@ -88,7 +88,7 @@ git ls-files | wc -l            # tracked_files
 
 Then calculate `commit_span_days` as the elapsed calendar days between `first_commit_date` and `last_commit_date` (same-day histories are `0`). Do not phrase this as "built in N days" unless you also state that definition.
 
-Initialize `entry_points` and `public_surface_items` to `0` for now; update them after Steps 2 and 3 when those arrays are populated. `public_surface_items` means "curated public surface items recorded by orient, capped at 20," not total endpoints/commands in the repo. If the target is not a git repo or a command cannot run, set the affected field to `null` and explain the caveat in `source_notes`.
+Initialize `entry_points` and `public_surface_items` to `null` — the "not computed yet" sentinel — then set them to the exact counts after Steps 2 and 3 when those arrays are populated (a legitimate count of `0` is fine *after* discovery has run). Never pre-fill them with `0`: downstream skills treat non-null as citable, and a placeholder `0` from an interrupted run would be published as a confident "0 entry points" fact. `public_surface_items` means "curated public surface items recorded by orient, capped at 20," not total endpoints/commands in the repo. If the target is not a git repo or a command cannot run, set the affected field to `null` and explain the caveat in `source_notes`.
 
 Write snapshot.
 
