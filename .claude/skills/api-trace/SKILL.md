@@ -308,6 +308,8 @@ Then append to `.archeology/report.md` (create with standard header if absent):
 
 Then write the snapshot one final time with `api-trace` added to `meta.skills_run`.
 
+Optionally, if `validate.py` (in the same directory as these skills) is available and you have permission to run `python3`, validate your output: `python3 .claude/skills/validate.py <target-repo>`. Do not add interpreters to any allowlist for this — when in doubt, skip it; the run.sh wrapper performs this check deterministically anyway.
+
 ---
 
 ## Context budget rules

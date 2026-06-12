@@ -214,6 +214,15 @@ Two differences from Claude Code to know:
 
 ---
 
-## Schema
+## Schema & validation
 
 The snapshot contract lives at [`schema/snapshot.schema.json`](schema/snapshot.schema.json) — a JSON Schema defining the shared artifact all skills read from and write to. If you're building tooling on top of the output, validate against this.
+
+The contract is **enforced, not just documented**: [`.claude/skills/validate.py`](.claude/skills/validate.py) checks a snapshot against the schema and lints `report.md` marker structure (balanced markers, canonical section order, no duplicates). It travels with `cp -r .claude`, uses the `jsonschema` package when installed, and falls back to built-in structural checks when not.
+
+```bash
+python3 .claude/skills/validate.py <target-repo>     # validate snapshot + report
+python3 .claude/skills/validate.py --self-test        # verify the validator itself
+```
+
+`scripts/run.sh` runs it automatically after every skill and fails loudly on violations — a deterministic check outside the agent's discretion, which is the point: skills are asked to follow the contract, but the runner verifies it.

@@ -1,0 +1,37 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install jsonschema
+        run: pip install jsonschema
+
+      - name: Schema is itself a valid JSON Schema
+        run: |
+          python3 - <<'EOF'
+          import json
+          import jsonschema
+          schema = json.load(open("schema/snapshot.schema.json"))
+          jsonschema.Draft202012Validator.check_schema(schema)
+          print("schema OK")
+          EOF
+
+      - name: Validator self-test (full jsonschema mode)
+        run: python3 .claude/skills/validate.py --self-test
+
+      - name: Validate any checked-in example snapshots
+        run: |
+          found=0
+          for f in $(git ls-files 'examples/*snapshot*.json' '*.archeology/snapshot.json'); do
+            found=1
+            python3 .claude/skills/validate.py --snapshot "$f"
+          done
+          [ "$found" -eq 0 ] && echo "no example snapshots checked in — skipped" || true
